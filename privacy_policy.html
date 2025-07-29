@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHATTIGR AS</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('trolltunga_ycc.JPG');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            margin-right: 15px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .hero-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 40px;
+        }
+
+        .hero-text {
+            max-width: 800px;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            color: #d4af37;
+            margin-bottom: 30px;
+            line-height: 1.2;
+            font-weight: normal;
+        }
+
+        .hero-text p {
+            font-size: 2rem;
+            color: #d4af37;
+            font-weight: normal;
+        }
+
+        /* Projects Section */
+        .projects-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+        }
+
+        .projects-title {
+            text-align: center;
+            /* font-size: 2.5rem; */
+            font-size: 2rem;
+            color: #2d5016;
+            margin-bottom: 60px;
+            font-weight: normal;
+        }
+
+        .projects-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .project-card {
+            background: transparent;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .project-image {
+            height: 200px;
+            /* background: linear-gradient(135deg, #d4af37, #f4e4a6, #8fbc8f, #2d5016); */
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-image img {
+            width: 100%; /*need to change to show full image, and image needs to center */
+            height: 100%;
+            object-fit: contain;
+            /* object-fit: cover; */
+            opacity: 1;
+        }
+
+        .project-content {
+            padding: 0;
+            position: relative;
+            /* background: white; */
+            background: transparent;
+        }
+
+        .project-title-container {
+            /* background: rgba(255, 255, 255, 0.95); */
+            background: transparent;
+            border-top: 2px solid #e0e0e0;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 20px 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .project-title {
+            font-size: 1rem;
+            color: #2d5016;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dropdown-arrow {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .project-card.expanded .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .project-description {
+        color: #666;
+        line-height: 1.6;
+        padding: 0 30px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        background: white;
+        }
+
+        .project-card.expanded .project-description {
+            max-height: 300px;
+            padding: 20px 30px 30px 30px;
+        }
+
+        /* TED Talk Section */
+        .ted-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .ted-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .ted-title {
+            font-size: 2.5rem;
+            color: #2d5016;
+            margin-bottom: 40px;
+            font-weight: normal;
+        }
+
+        .ted-video {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .ted-video img {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .ted-video:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Funding Section */
+        .funding-section {
+            background: white;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .funding-title {
+            /* font-size: 2.5rem; */
+            font-size: 2rem;
+            color: #2d5016;
+            margin-bottom: 50px;
+            font-weight: normal;
+        }
+
+        .funding-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .funding-logo {
+            height: 60px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .funding-logo:hover {
+            opacity: 1;
+        }
+
+        /* Publications Section */
+        .publications-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .publications-title {
+            font-size: 2.5rem;
+            color: #2d5016;
+            margin-bottom: 50px;
+            font-weight: normal;
+        }
+
+        .publications-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .publication-logo {
+            height: 50px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .publication-logo:hover {
+            opacity: 1;
+        }
+
+        /* Newsletter Section */
+        .newsletter-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+        }
+
+        .newsletter-frame {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .newsletter-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .newsletter-content h3 {
+            font-size: 2rem;
+            color: #2d5016;
+            margin-bottom: 20px;
+            font-weight: normal;
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-input {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .submit-btn {
+            background: #2d5016;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #1a2f0a;
+        }
+
+        /* Privacy Policy Content */
+        .privacy-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+            min-height: 60vh;
+        }
+
+        .privacy-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .privacy-content h2 {
+            font-size: 2.5rem;
+            color: #2d5016;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .privacy-content p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .effective-date {
+            font-style: italic;
+            margin-top: 20px;
+        }   
+
+        /* Additional CSS to add to existing styles */
+        .privacy-content .intro-text {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            text-align: left;
+        }
+
+        .privacy-content h2 {
+            font-size: 2.5rem;
+            color: #2d5016;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .privacy-content h3 {
+            font-size: 1.3rem;
+            color: #2d5016;
+            margin-bottom: 15px;
+            margin-top: 25px;
+            font-weight: bold;
+        }
+
+        .privacy-text {
+            text-align: left;
+            max-width: 100%;
+        }
+
+        .policy-section {
+            margin-bottom: 25px;
+        }
+
+        .policy-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .policy-list > li {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .policy-list > li:before {
+            content: "•";
+            color: #2d5016;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .sub-list {
+            margin-top: 10px;
+            padding-left: 20px;
+            list-style: none;
+        }
+
+        .sub-list li {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            color: #666;
+            line-height: 1.7;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .sub-list li:before {
+            content: "◦";
+            color: #2d5016;
+            position: absolute;
+            left: 0;
+        }
+
+        .effective-date {
+            font-style: italic;
+            margin-bottom: 30px !important;
+            text-align: center;
+            color: #888;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2d5016;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .footer-nav {
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer-links {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #d4af37;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #4a6b2a;
+            padding-top: 20px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        /* Responsive Design for Footer */
+        @media (max-width: 768px) {
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                gap: 20px;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-text p {
+                font-size: 1.5rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .newsletter-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .funding-logos,
+            .publications-logos {
+                gap: 20px;
+            }
+        }
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .scroll-to-top:hover {
+            background: #d4af37;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="hero">
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                CHATTIGR AS  洽得科技
+            </div>
+            <ul class="nav-links">
+                <li><a href="about_CHATTIGR.html">About us</a></li>
+                <!-- <li><a href="#hero">Home</a></li> -->
+                <li><a href="index.html#projects">Our solutions</a></li>
+                <!-- <li><a href="#ted">TED Talk</a></li> -->
+                <li><a href="team.html">Team</a></li>
+                <li><a href="index.html#partners">Partners</a></li>
+                <li><a href="index.html#newsletter">Contact</a></li>
+                <!-- <li><a href="#footer">Contact</a></li> -->
+            </ul>
+        </nav>
+        <div class="hero-content">
+            <div class="hero-text">
+                <!--<h1>Transformative integrated solutions towards better reservoirs.</h1> -->
+                <p>Transformative integrated solutions<br>towards better reservoirs.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Privacy Policy Section -->
+    <section class="privacy-section">
+        <div class="privacy-container">
+            <!-- privacy-content div content -->
+            <div class="privacy-content">
+                <h2>Privacy Policy</h2>
+                <p class="effective-date">Effective Date: 17 June 2025</p>
+                
+                <div class="privacy-text">
+                    <p class="intro-text">At CHATTIGR AS, we prioritize your privacy. This policy outlines our practices concerning the collection, use, and protection of your personal data.</p>
+                    
+                    <div class="policy-section">
+                        <h3>1. Information We Collect:</h3>
+                        <ul class="policy-list">
+                            <li>Personal Data: When you sign up for our mailing list, we collect your name and email address solely for the purpose of providing you with our mailing list service.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="policy-section">
+                        <h3>2. Purpose of Collection:</h3>
+                        <ul class="policy-list">
+                            <li>We collect your name and email address to:
+                                <ul class="sub-list">
+                                    <li>Send you news, updates, and information related to CHATTIGR AS.</li>
+                                    <li>Respond to any queries or feedback you might have.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h3>3. Data Storage and Protection:</h3>
+                        <ul class="policy-list">
+                            <li>Your data is stored securely, and we implement suitable measures to prevent unauthorized access, alteration, or loss of your data.</li>
+                            <li>We do not share, sell, or distribute your data with third-party entities.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="policy-section">
+                        <h3>4. Your Rights:</h3>
+                        <ul class="policy-list">
+                            <li>You have the right to:
+                                <ul class="sub-list">
+                                    <li>Request access to your data.</li>
+                                    <li>Correct any inaccuracies in your data.</li>
+                                    <li>Unsubscribe from our mailing list at any time. Instructions to do so will be included in every communication you receive from us.</li>
+                                    <li>Request deletion of your data.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h3>5. Updates to the Privacy Policy:</h3>
+                        <ul class="policy-list">
+                            <li>We may update this policy from time to time. Any significant changes will be communicated to you via the email address you provided.</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h3>6. Contact:</h3>
+                        <ul class="policy-list">
+                            <li>If you have any questions, concerns, or requests related to your data and privacy, please contact us at hi@ctgr.dev</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer">
+        <div class="footer-nav">
+            <ul class="footer-links">
+                <li><a href="index.html#projects">The company</a></li>
+                <li><a href="team.html">Team</a></li>
+                <li><a href="privacy_policy.html">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer-bottom">
+            <p>© CHATTIGR AS 2025</p>
+            <p>Press and General Inquiries</p>
+            <p>hi@ctgr.dev</p>
+            <p>9009 Tromsø, Norway</p>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" onclick="scrollToTop()">^</button>
+    
+    <script>
+        function toggleProject(card, url) {
+            // Toggle the expanded class
+            card.classList.toggle('expanded');
+            
+            // If clicked and expanded, navigate after a short delay to show animation
+            if (card.classList.contains('expanded')) {
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, 300);
+            }
+        }
+
+        function toggleDropdown(titleContainer) {
+        const card = titleContainer.closest('.project-card');
+        card.classList.toggle('expanded');
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-links a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+
+                // Only handle smooth scroll for in-page links
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const targetSection = document.querySelector(href);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            header.style.transform = `translateY(${rate}px)`;
+        });
+
+        // Form submission
+        // Remove the old form submission event listener and replace with this simple validation
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            const inputs = this.querySelectorAll('.form-input');
+            let allFilled = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    allFilled = false;
+                    input.style.borderColor = '#ff6b6b';
+                } else {
+                    input.style.borderColor = '#ddd';
+                }
+            });
+            
+            if (!allFilled) {
+                e.preventDefault();
+                alert('Please fill in all fields.');
+            }
+            // If all fields are filled, form will submit naturally to Formspree
+        });
+        // Scroll to Top functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', () => {
+            const scrollBtn = document.querySelector('.scroll-to-top');
+            if (window.pageYOffset > 300) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+        });
+    </script>
+
+</body>
+</html>

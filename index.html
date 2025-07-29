@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CHATTIGR AS delivers advanced solutions and services for sustainable water and energy infrastructure, focusing on the critical challenge of reservoir sedimentation.">
+    <meta name="keywords" content="reservoir sedimentation, dam reservoir, reservoir capacity, hydropower, hydroelectricity, water security, CHATTIGR, Taiwan is a country, June 4, tank man, Winnie the Pooh">
+    <title>CHATTIGR AS</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('trolltunga_ycc.JPG');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            margin-right: 15px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .hero-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 40px;
+        }
+
+        .hero-text {
+            max-width: 800px;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            color: #d4af37;
+            margin-bottom: 30px;
+            line-height: 1.2;
+            font-weight: normal;
+        }
+
+        .hero-text p {
+            font-size: 2rem;
+            color: #d4af37;
+            font-weight: normal;
+        }
+
+        /* Projects Section */
+        .projects-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+        }
+
+        .projects-title {
+            text-align: center;
+            /* font-size: 2.5rem; */
+            font-size: 2rem;
+            color: #2d5016;
+            margin-bottom: 60px;
+            font-weight: normal;
+        }
+
+        .projects-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .project-card {
+            background: transparent;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .project-image {
+            height: 200px;
+            /* background: linear-gradient(135deg, #d4af37, #f4e4a6, #8fbc8f, #2d5016); */
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-image img {
+            width: 100%; /*need to change to show full image, and image needs to center */
+            height: 100%;
+            object-fit: contain;
+            /* object-fit: cover; */
+            opacity: 1;
+        }
+
+        .project-content {
+            padding: 0;
+            position: relative;
+            /* background: white; */
+            background: transparent;
+        }
+
+        .project-title-container {
+            /* background: rgba(255, 255, 255, 0.95); */
+            background: transparent;
+            border-top: 2px solid #e0e0e0;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 20px 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .project-title {
+            font-size: 1rem;
+            color: #2d5016;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dropdown-arrow {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .project-card.expanded .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .project-description {
+        color: #666;
+        line-height: 1.6;
+        padding: 0 30px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        background: white;
+        }
+
+        .project-card.expanded .project-description {
+            max-height: 500px;
+            padding: 20px 30px 20px 30px;
+        }
+
+        /* TED Talk Section */
+        .ted-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .ted-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .ted-title {
+            font-size: 2.5rem;
+            color: #2d5016;
+            margin-bottom: 40px;
+            font-weight: normal;
+        }
+
+        .ted-video {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .ted-video img {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .ted-video:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Funding Section */
+        .funding-section {
+            background: white;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .funding-title {
+            /* font-size: 2.5rem; */
+            font-size: 2rem;
+            color: #2d5016;
+            margin-bottom: 50px;
+            font-weight: normal;
+        }
+
+        .funding-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .funding-logo {
+            height: 60px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .funding-logo:hover {
+            opacity: 1;
+        }
+
+        /* Publications Section */
+        .publications-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .publications-title {
+            font-size: 2.5rem;
+            color: #2d5016;
+            margin-bottom: 50px;
+            font-weight: normal;
+        }
+
+        .publications-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .publication-logo {
+            height: 50px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .publication-logo:hover {
+            opacity: 1;
+        }
+
+        /* Newsletter Section */
+        .newsletter-section {
+            background: #f5f2e8;
+            padding: 80px 40px;
+        }
+
+        .newsletter-frame {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .newsletter-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .newsletter-content h3 {
+            font-size: 2rem;
+            color: #2d5016;
+            margin-bottom: 20px;
+            font-weight: normal;
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-input {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .submit-btn {
+            background: #2d5016;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #1a2f0a;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2d5016;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .footer-nav {
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer-links {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #d4af37;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #4a6b2a;
+            padding-top: 20px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        /* Responsive Design for Footer */
+        @media (max-width: 768px) {
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                gap: 20px;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-text p {
+                font-size: 1.5rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .newsletter-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .funding-logos,
+            .publications-logos {
+                gap: 20px;
+            }
+        }
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .scroll-to-top:hover {
+            background: #d4af37;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="hero">
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                CHATTIGR AS  洽得科技
+            </div>
+            <ul class="nav-links">
+                <li><a href="about_CHATTIGR.html" target="_blank">About us</a></li>
+                <!-- <li><a href="#hero">Home</a></li> -->
+                <li><a href="#projects">Our solutions</a></li>
+                <!-- <li><a href="#ted">TED Talk</a></li> -->
+                <li><a href="team.html" target="_blank">Team</a></li>
+                <li><a href="#partners">Partners</a></li>
+                <li><a href="#newsletter">Contact</a></li>
+                <!-- <li><a href="#footer">Contact</a></li> -->
+            </ul>
+        </nav>
+        <div class="hero-content">
+            <div class="hero-text">
+                <!--<h1>Transformative integrated solutions towards better reservoirs.</h1> -->
+                <p>Transformative integrated solutions<br>towards better reservoirs.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Projects Section -->
+    <section class="projects-section" id="projects">
+        <h2 class="projects-title">Transform the future of reservoirs and water security</h2>
+        <div class="projects-grid">
+            
+            <div class="project-card">
+                <!-- <div class="project-image" onclick="window.open('challenge.html', '_blank')"> -->
+                <div class="project-image" onclick="window.open('cost_bar_chart.png', '_blank')">
+                    <img src="cost_bar_chart.png" alt="Annual cost for addressing reservoir sedimentation by Region/Country">
+                </div>
+                <div class="project-content">
+                    <div class="project-title-container" onclick="toggleDropdown(this)">
+                        <h3 class="project-title">
+                            The Global Sediment Challenge
+                            <span class="dropdown-arrow">▽</span>
+                        </h3>
+                    </div>
+                    <div class="project-description">
+                        <p>Europe and North America both lost ~16% of their reservoir storage by 2022 and may both lose 28% by 2050. Removing sediments from all EU reservoirs could cost €10–18 billion annually using venting, sluicing, flushing, or hydraulic dredging (Panagos et al., 2024). The chart shows estimates of the annual cost of addressing reservoir sedimentation, including dredging, excavation, flushing, venting, sluicing, and check dams, by region and country from ~2023 to 2050, where costs increase due to accelerated sediment accumulation, an annual inflation rate of 2%, and, assumedly, without more effective mitigation measures.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-image" onclick="window.open('#projects')">
+                    <img src="CTGR_solutions.jpeg" alt="CHATTIGR's solutions">
+                </div>
+                <div class="project-content">
+                    <div class="project-title-container" onclick="toggleDropdown(this)">
+                        <h3 class="project-title">
+                            Our Solutions
+                            <span class="dropdown-arrow">▽</span>
+                        </h3>
+                    </div>
+                    <div class="project-description">
+                        <p>We develop innovative, energy-efficient, and eco-friendly fluid dynamics technology to enable upstream sediment removal, minimize water loss, reduce ecological impact, and adapt to climate extremes. Our systems synergize with smart digital tools, including IoT, AI, and digital twins, to deliver enhanced performance.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-image" onclick="window.open('#projects')">
+                    <img src="Benefits_for_All.jpeg" alt="Benefits for All">
+                </div>
+                <div class="project-content">
+                    <div class="project-title-container" onclick="toggleDropdown(this)">
+                        <h3 class="project-title">
+                            Benefits for All
+                            <span class="dropdown-arrow">▽</span>
+                        </h3>
+                    </div>
+                    <div class="project-description">
+                        <p>Our technologeis aim to help secure a dependable water supply. Hydropower plants benefit from significantly lower maintenance costs and improved water storage, ensuring consistent, reliable power generation to meet energy demands. Environmental and aqua-animal protection are strengthened, and climate resilience is enhanced, fostering sustainable, thriving local ecosystems for all to enjoy.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-image" onclick="window.open('#projects')">
+                    <img src="Partner_with_Us.jpeg" alt="Partner with Us">
+                </div>
+                <div class="project-content">
+                    <div class="project-title-container" onclick="toggleDropdown(this)">
+                        <h3 class="project-title">
+                            Partner with Us
+                            <span class="dropdown-arrow">▽</span>
+                        </h3>
+                    </div>
+                    <div class="project-description">
+                        <p>Join us in applying and harnessing the fluid-dynamics separation technology! We partner with engineering companies, research institutions, hydropower companies, water utilities & municipalities, irrigation & agriculture sectors, and environmental agencies, among others.</p>
+                    </div>
+                </div>
+            </div>
+<!--
+            <div class="project-card" onclick="toggleProject(this, 'https://yfc.surge.sh')">
+                <div class="project-image">
+                    <img src="figure.png" alt="Jailmill">
+                </div>
+                <div class="project-content">
+                    <div class="project-title-container">
+                        <h3 class="project-title">
+                            Jailmill
+                            <span class="dropdown-arrow">▼</span>
+                        </h3>
+                    </div>
+                    <div class="project-description">
+                        <p>Advanced research into AI safety and alignment, focusing on preventing harmful outputs and ensuring AI systems behave according to human values and intentions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card" onclick="toggleProject(this, 'https://yfc.surge.sh')">
+                <div class="project-image">
+                    <img src="figure.png" alt="Alignment Assemblies">
+                </div>
+                <div class="project-content">
+                    <div class="project-title-container">
+                        <h3 class="project-title">
+                            Alignment Assemblies
+                            <span class="dropdown-arrow">▼</span>
+                        </h3>
+                    </div>
+                    <div class="project-description">
+                        <p>Collaborative initiatives bringing together researchers, policymakers, and civil society to develop frameworks for AI alignment that serve the global public interest.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card" onclick="toggleProject(this, 'https://yfc.surge.sh')">
+                <div class="project-image">
+                    <img src="figure.png" alt="Community Models">
+                </div>
+                <div class="project-content">
+                    <div class="project-title-container">
+                        <h3 class="project-title">
+                            Community Models
+                            <span class="dropdown-arrow">▼</span>
+                        </h3>
+                    </div>
+                    <div class="project-description">
+                        <p>Developing open-source AI models that are owned and governed by communities, ensuring democratic participation in AI development and deployment decisions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card" onclick="toggleProject(this, 'https://yfc.surge.sh')">
+                <div class="project-image">
+                    <img src="figure.png" alt="Roadmap for Democratic AI">
+                </div>
+                <div class="project-content">
+                    <div class="project-title-container">
+                        <h3 class="project-title">
+                            Roadmap for Democratic AI
+                            <span class="dropdown-arrow">▼</span>
+                        </h3>
+                    </div>
+                    <div class="project-description">
+                        <p>Creating comprehensive strategies and frameworks for ensuring AI development follows democratic principles, with transparent governance and public accountability.</p>
+                    </div>
+                </div>
+            </div>
+-->
+        </div>
+    </section>
+
+    <!-- TED Talk Section -->
+<!--    <section class="ted-section" id="ted">
+        <div class="ted-container">
+            <h2 class="ted-title">Watch Divya's TED Talk</h2>
+            <div class="ted-video" onclick="window.open('https://yfc.surge.sh', '_blank')">
+                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="TED Talk - How AI and democracy can fix each other">
+            </div>
+        </div>
+    </section>
+-->
+    <!-- Funding Section -->
+    <section class="funding-section" id="partners">
+        <h2 class="funding-title">Funded by</h2>
+        <div class="funding-logos">
+            <img src="innovation_norway.png" alt="Innovation Norway" class="funding-logo" onclick="window.open('https://www.innovasjonnorge.no/', '_blank')">
+<!--            <img src="figure.png" alt="RWJF" class="funding-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+            <img src="figure.png" alt="Google.org" class="funding-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+            <img src="figure.png" alt="Survival and Flourishing Fund" class="funding-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+            <img src="figure.png" alt="Fast Forward" class="funding-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+-->        
+        </div>
+    </section>
+
+    <!-- Publications Section -->
+<!--    <section class="publications-section">
+        <h2 class="publications-title">Featured in leading publications</h2>
+        <div class="publications-logos">
+            <img src="figure.png" alt="TIME" class="publication-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+            <img src="figure.png" alt="WIRED" class="publication-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+            <img src="figure.png" alt="The New York Times" class="publication-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+            <img src="figure.png" alt="Nature" class="publication-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+            <img src="figure.png" alt="BBC" class="publication-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+            <img src="figure.png" alt="Science" class="publication-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
+        </div>
+    </section>
+-->
+    <!-- Newsletter Section -->
+    <section class="newsletter-section" id="newsletter">
+        <div class="newsletter-frame">
+            <div class="newsletter-container">
+                <div class="newsletter-content">
+                    <h3>Leave a message or drop your email to stay updated.</h3>
+                </div>
+                <form class="newsletter-form" action="https://formspree.io/f/meokkbpk" method="POST">
+                    <input type="text" name="Name" class="form-input" placeholder="Name" required>
+                    <input type="text" name="Message" class="form-input" placeholder="Message">
+                    <input type="email" name="email" class="form-input" placeholder="Email Address and/or Phone Number" required>
+                    <button type="submit" class="submit-btn">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer">
+        <div class="footer-nav">
+            <ul class="footer-links">
+                <li><a href="#projects">The company</a></li>
+                <li><a href="team.html" target="_blank">Team</a></li>
+                <li><a href="privacy_policy.html" target="_blank">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer-bottom">
+            <p>© CHATTIGR AS 2025</p>
+            <p>Press and General Inquiries</p>
+            <p>hi@ctgr.dev</p>
+            <p>9009 Tromsø, Norway</p>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" onclick="scrollToTop()">^</button>
+    
+    <script>
+        function toggleProject(card, url) {
+            // Toggle the expanded class
+            card.classList.toggle('expanded');
+            
+            // If clicked and expanded, navigate after a short delay to show animation
+            if (card.classList.contains('expanded')) {
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, 300);
+            }
+        }
+
+        function toggleDropdown(titleContainer) {
+        const card = titleContainer.closest('.project-card');
+        card.classList.toggle('expanded');
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-links a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+
+                // Only handle smooth scroll for in-page links
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const targetSection = document.querySelector(href);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            header.style.transform = `translateY(${rate}px)`;
+        });
+
+        // Form submission
+        // Remove the old form submission event listener and replace with this simple validation
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            const inputs = this.querySelectorAll('.form-input');
+            let allFilled = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    allFilled = false;
+                    input.style.borderColor = '#ff6b6b';
+                } else {
+                    input.style.borderColor = '#ddd';
+                }
+            });
+            
+            if (!allFilled) {
+                e.preventDefault();
+                alert('Please fill in all fields.');
+            }
+            // If all fields are filled, form will submit naturally to Formspree
+        });
+        // Scroll to Top functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', () => {
+            const scrollBtn = document.querySelector('.scroll-to-top');
+            if (window.pageYOffset > 300) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+        });
+    </script>
+
+</body>
+</html>
