@@ -49,6 +49,17 @@
             font-weight: bold;
         }
 
+        .special-i {
+            font-family: 'Dancing Script', cursive;
+            font-weight: 700; /* Bold */
+            font-size: 24px;
+            font-style: italic;
+            margin-left: 1px;
+            margin-right: 4px;
+            position: relative;
+            top: -2px;
+        }
+
         .logo-icon {
             width: 80px;
             height: 80px;
@@ -126,6 +137,11 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 40px;
+        }
+        @media (min-width: 1024px) {          /* 2 × 350px + 40px gap */
+            .projects-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
         .project-card {
@@ -507,7 +523,7 @@
                 <div class="logo-icon">
                     <img src="logo.png" alt="Logo">
                 </div>
-                CHATTIGR AS
+                CHATT<span class="special-i">i</span>GR AS
             </div>
             <ul class="nav-links">
                 <li><a href="about_CHATTIGR.html" target="_blank">About us</a></li>
@@ -536,12 +552,12 @@
             <div class="project-card">
                 <!-- <div class="project-image" onclick="window.open('challenge.html', '_blank')"> -->
                 <div class="project-image" onclick="window.open('cost_bar_chart.png', '_blank')">
-                    <img src="cost_bar_chart.png" alt="Annual cost for addressing reservoir sedimentation by Region/Country">
+                    <img src="Global_Sediment_Challenge.png" alt="Global Sediment Challenge">
                 </div>
                 <div class="project-content">
                     <div class="project-title-container" onclick="toggleDropdown(this)">
                         <h3 class="project-title">
-                            The Global Sediment Challenge
+                            Global Sediment Challenge
                             <span class="dropdown-arrow">▽</span>
                         </h3>
                     </div>
@@ -553,7 +569,7 @@
 
             <div class="project-card">
                 <div class="project-image" onclick="window.open('#projects')">
-                    <img src="CTGR_solutions.jpeg" alt="CHATTIGR's solutions">
+                    <img src="CTGR_solutions.jpeg" alt="CHATTIGR's Solutions">
                 </div>
                 <div class="project-content">
                     <div class="project-title-container" onclick="toggleDropdown(this)">
@@ -685,7 +701,7 @@
 -->
     <!-- Funding Section -->
     <section class="funding-section" id="partners">
-        <h2 class="funding-title">Funded by</h2>
+        <h2 class="funding-title">Partners</h2>
         <div class="funding-logos">
             <img src="innovation_norway.png" alt="Innovation Norway" class="funding-logo" onclick="window.open('https://www.innovasjonnorge.no/', '_blank')">
 <!--            <img src="figure.png" alt="RWJF" class="funding-logo" onclick="window.open('https://yfc.surge.sh', '_blank')">
