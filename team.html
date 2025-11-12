@@ -47,6 +47,18 @@
             font-weight: bold;
         }
 
+        .logo-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-link:hover {
+            color: #d4af37;
+            /* opacity: 0.8;  subtle hover effect */
+        }
+
         .logo-icon {
             width: 80px;
             height: 80px;
@@ -635,10 +647,12 @@
     <header class="header" id="hero">
         <nav class="nav">
             <div class="logo">
-                <div class="logo-icon">
-                    <img src="logo.png" alt="Logo">
-                </div>
-                CHATT<span class="special-i">i</span>GR AS
+                <a href="https://ctgr.dev" class="logo-link">
+                    <div class="logo-icon">
+                        <img src="logo.png" alt="Logo">
+                    </div>
+                    CHATT<span class="special-i">i</span>GR AS
+                </a>
             </div>
             <ul class="nav-links">
                 <li><a href="about_CHATTIGR.html">About us</a></li>
@@ -653,7 +667,6 @@
         </nav>
         <div class="hero-content">
             <div class="hero-text">
-                <!--<h1>Transformative integrated solutions towards better reservoirs.</h1> -->
                 <p>Transformative integrated solutions<br>towards better reservoirs.</p>
             </div>
         </div>
@@ -665,7 +678,6 @@
             <!-- privacy-content div content -->
             <div class="privacy-content">
                 <h2>Team</h2>
-                <!-- <p class="effective-date">Effective Date: 17 June 2025</p> -->
                 
                 <div class="privacy-text">
                     <p class="intro-text">CHATTIGR AS is an innovative technology company founded in 2023 in Norway, supported by colleagues of the University of Bergen:</p>
@@ -689,7 +701,7 @@
                     <div class="policy-section">
                         <h3>Alex C. HOFFMANN</h3>
                         <ul class="policy-list">
-                            <li>Advisor. Emeritus Professor, University of Bergen, expert in multiphase systems and process technology, with extensive experience in industrial and scientific innovation (see <a href="https://scholar.google.com/citations?user=sYd5H-sAAAAJ" target="_blank">publications and citations</a>).
+                            <li>Advisor. Emeritus Professor, University of Bergen, expert in multiphase systems and process technology, with extensive experience in <a href="https://scholar.google.com/citations?user=sYd5H-sAAAAJ" target="_blank">industrial and scientific innovation</a>.
                             </li>
                         </ul>
                     </div>
@@ -718,7 +730,7 @@
             <p>© CHATTIGR AS 2025</p>
             <p>Press and General Inquiries</p>
             <p>hi@ctgr.dev</p>
-            <p>9009 Tromsø, Norway</p>
+            <p>Norwegian org. no.: 930 816 841</p>
         </div>
     </footer>
 

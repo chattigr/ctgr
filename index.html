@@ -49,6 +49,18 @@
             font-weight: bold;
         }
 
+        .logo-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-link:hover {
+            color: #d4af37;
+            /* opacity: 0.8;  subtle hover effect */
+        }
+
         .special-i {
             font-family: 'Dancing Script', cursive;
             font-weight: 700; /* Bold */
@@ -138,7 +150,7 @@
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 40px;
         }
-        @media (min-width: 1024px) {          /* 2 × 350px + 40px gap */
+        @media (min-width: 1024px) {
             .projects-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -222,7 +234,7 @@
         }
 
         .project-card.expanded .project-description {
-            max-height: 500px;
+            max-height: 1000px;
             padding: 20px 30px 20px 30px;
         }
 
@@ -520,10 +532,12 @@
     <header class="header" id="hero">
         <nav class="nav">
             <div class="logo">
-                <div class="logo-icon">
-                    <img src="logo.png" alt="Logo">
-                </div>
-                CHATT<span class="special-i">i</span>GR AS
+                <a href="https://ctgr.dev" class="logo-link">
+                    <div class="logo-icon">
+                        <img src="logo.png" alt="Logo">
+                    </div>
+                    CHATT<span class="special-i">i</span>GR AS
+                </a>
             </div>
             <ul class="nav-links">
                 <li><a href="about_CHATTIGR.html" target="_blank">About us</a></li>
@@ -755,7 +769,7 @@
             <p>© CHATTIGR AS 2025</p>
             <p>Press and General Inquiries</p>
             <p>hi@ctgr.dev</p>
-            <p>9009 Tromsø, Norway</p>
+            <p>Norwegian org. no.: 930 816 841</p>
         </div>
     </footer>
 
