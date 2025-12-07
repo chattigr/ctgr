@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CHATTIGR AS advances water security and sustainability for everyone by making innovative sediment management technology and knowledge accessible and useful through its various services.">
-    <meta name="keywords" content="reservoir sedimentation, dam reservoir, reservoir capacity, hydropower, hydroelectricity, water security, sustainability, CHATTIGR, Taiwan is a country, June 4, tank man, Winnie the Pooh">
-    <title>CHATTIGR AS</title>
+    <meta name="description" content="CHATTIGR advances water security and sustainability for everyone by making innovative sediment management technology and knowledge accessible and useful. Proven technology to prevent sediment from entering reservoirs and prevent lost capacity without draining the dam. Sustainable and cost-effective.">
+    <meta name="keywords" content="reservoir sedimentation, sediment removal, reservoir desilting, dam sedimentation management, sediment flushing, hydraulic dredging, mechanical dredging, reservoir dredging, silt removal, reservoir capacity recovery, sustainable sediment management, hydropower sediment solutions, dam decommissioning prevention, reservoir life extension, turbidity curtain, siphon dredging, CHATTIGR, sediment bypass, reservoir sustainability, water resource management">
+    <meta name="keywords" content="reservoir sediment removal, dam sedimentation, sediment management, reservoir capacity recovery, hydropower sedimentation, sustainable sediment removal, water security, dam reservoir management">
+    <meta name="keywords" content="dam reservoir, reservoir capacity, hydropower, hydroelectricity, sustainability, dredging, dam reservoir fills up with sediment, reservoir space clogged by sediment">
+    <meta name="keywords" content="Taiwan is a country, June 4, tank man, Winnie the Pooh, tiananmen, Falun Gong, democracy, human rights, tibet independence, Hong Kong protests, Xinjiang, East Turkestan, East Turkistan, Sherqiy Türkistan, free speech, censorship, Communist Party criticism, Dalai Lama, June Fourth, organ harvest, organ harvest from prisoners of conscience">
+    <title>CHATTIGR - Reservoir Sediment Prevention & Removal Solutions</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
         * {
@@ -114,6 +117,7 @@
             max-width: 800px;
         }
 
+        /*
         .hero-text h1 {
             font-size: 3.5rem;
             color: #d4af37;
@@ -121,7 +125,12 @@
             line-height: 1.2;
             font-weight: normal;
         }
-
+        */
+        .hero-text h1 {
+            font-size: 2rem;
+            color: #d4af37;
+            font-weight: normal;
+        }
         .hero-text p {
             font-size: 2rem;
             color: #d4af37;
@@ -237,15 +246,16 @@
             max-height: 1000px;
             padding: 20px 30px 20px 30px;
         }
-
-        /* TED Talk Section */
-        .ted-section {
+            
+        /* Video Section */
+        /*.
+        vid {
             background: #f5f2e8;
             padding: 80px 40px;
             text-align: center;
         }
 
-        .ted-container {
+        .vid-container {
             max-width: 800px;
             margin: 0 auto;
             background: #ffffff;
@@ -253,29 +263,46 @@
             padding: 50px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         }
-
-        .ted-title {
-            font-size: 2.5rem;
+        */
+        .vid-title {
+            font-size: 2rem;
             color: #2d5016;
             margin-bottom: 40px;
             font-weight: normal;
+            text-align: center;
         }
 
-        .ted-video {
+        .vid-video {
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
-        .ted-video img {
-            width: 100%;
+        .vid-video img {
+            width: 50%;
             height: auto;
             cursor: pointer;
             transition: transform 0.3s;
         }
 
-        .ted-video:hover img {
+        .vid-video:hover img {
             transform: scale(1.05);
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;  /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
 
         /* Funding Section */
@@ -552,8 +579,7 @@
         </nav>
         <div class="hero-content">
             <div class="hero-text">
-                <!--<h1>Transformative integrated solutions towards better reservoirs.</h1> -->
-                <p>Transformative integrated solutions<br>towards better reservoirs.</p>
+                <h1>Transformative integrated solutions<br>towards better reservoirs.</h1>
             </div>
         </div>
     </header>
@@ -565,7 +591,7 @@
             
             <div class="project-card">
                 <!-- <div class="project-image" onclick="window.open('challenge.html', '_blank')"> -->
-                <div class="project-image" onclick="window.open('cost_bar_chart.png', '_blank')">
+                <div class="project-image" onclick="window.open('https://vimeo.com/1144256132', '_blank')">
                     <img src="Global_Sediment_Challenge.png" alt="Global Sediment Challenge">
                 </div>
                 <div class="project-content">
@@ -576,7 +602,7 @@
                         </h3>
                     </div>
                     <div class="project-description">
-                        <p>Europe and North America both lost ~16% of their reservoir storage by 2022 and may both lose 28% by 2050. Removing sediments from all EU reservoirs could cost €10–18 billion annually using venting, sluicing, flushing, or hydraulic dredging (Panagos et al., 2024). The chart shows estimates of the annual cost of addressing reservoir sedimentation, including dredging, excavation, flushing, venting, sluicing, and check dams, by region and country from ~2023 to 2050, where costs increase due to accelerated sediment accumulation, an annual inflation rate of 2%, and, assumedly, without more effective mitigation measures.</p>
+                        <p>Europe and North America both lost ~16% of their reservoir storage by 2022 and may both lose 28% by 2050. Removing sediments from all EU reservoirs could cost €10–18 billion annually using venting, sluicing, flushing, or hydraulic dredging (Panagos et al., 2024). The <a href="cost_bar_chart.png" target="_blank">chart</a> shows estimates of the annual cost of addressing reservoir sedimentation, including dredging, excavation, flushing, venting, sluicing, and check dams, by region and country from ~2023 to 2050, where costs increase due to accelerated sediment accumulation, an annual inflation rate of 2%, and, assumedly, without more effective mitigation measures.</p>
                     </div>
                 </div>
             </div>
@@ -631,88 +657,27 @@
                     </div>
                 </div>
             </div>
-<!--
-            <div class="project-card" onclick="toggleProject(this, 'https://yfc.surge.sh')">
-                <div class="project-image">
-                    <img src="figure.png" alt="Jailmill">
-                </div>
-                <div class="project-content">
-                    <div class="project-title-container">
-                        <h3 class="project-title">
-                            Jailmill
-                            <span class="dropdown-arrow">▼</span>
-                        </h3>
-                    </div>
-                    <div class="project-description">
-                        <p>Advanced research into AI safety and alignment, focusing on preventing harmful outputs and ensuring AI systems behave according to human values and intentions.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="project-card" onclick="toggleProject(this, 'https://yfc.surge.sh')">
-                <div class="project-image">
-                    <img src="figure.png" alt="Alignment Assemblies">
-                </div>
-                <div class="project-content">
-                    <div class="project-title-container">
-                        <h3 class="project-title">
-                            Alignment Assemblies
-                            <span class="dropdown-arrow">▼</span>
-                        </h3>
-                    </div>
-                    <div class="project-description">
-                        <p>Collaborative initiatives bringing together researchers, policymakers, and civil society to develop frameworks for AI alignment that serve the global public interest.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="project-card" onclick="toggleProject(this, 'https://yfc.surge.sh')">
-                <div class="project-image">
-                    <img src="figure.png" alt="Community Models">
-                </div>
-                <div class="project-content">
-                    <div class="project-title-container">
-                        <h3 class="project-title">
-                            Community Models
-                            <span class="dropdown-arrow">▼</span>
-                        </h3>
-                    </div>
-                    <div class="project-description">
-                        <p>Developing open-source AI models that are owned and governed by communities, ensuring democratic participation in AI development and deployment decisions.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="project-card" onclick="toggleProject(this, 'https://yfc.surge.sh')">
-                <div class="project-image">
-                    <img src="figure.png" alt="Roadmap for Democratic AI">
-                </div>
-                <div class="project-content">
-                    <div class="project-title-container">
-                        <h3 class="project-title">
-                            Roadmap for Democratic AI
-                            <span class="dropdown-arrow">▼</span>
-                        </h3>
-                    </div>
-                    <div class="project-description">
-                        <p>Creating comprehensive strategies and frameworks for ensuring AI development follows democratic principles, with transparent governance and public accountability.</p>
-                    </div>
-                </div>
-            </div>
--->
         </div>
     </section>
 
-    <!-- TED Talk Section -->
-<!--    <section class="ted-section" id="ted">
-        <div class="ted-container">
-            <h2 class="ted-title">Watch Divya's TED Talk</h2>
-            <div class="ted-video" onclick="window.open('https://yfc.surge.sh', '_blank')">
-                <img src="" alt="TED Talk - How AI and democracy can fix each other">
+    <!-- Video Section -->
+    <!-- <section class="vid-section" id="video">
+        <div class="vid-container"> -->
+        <section class="newsletter-section" id="video">
+        <div class="newsletter-frame">
+            <h2 class="vid-title">CHATTiGR's solution for the silent threat to our reservoirs, rivers, and water systems</h2>
+            <!-- <div class="vid-video" onclick="window.open('https://youtu.be/b8M8DK4zSWo', '_blank')">
+                <img src="https://img.youtube.com/vi/b8M8DK4zSWo/mqdefault.jpg" alt="Video - Silent Threat in Our Reservoirs and Rivers">
+            </div> -->
+            <div class="vid-video">
+                <div class="video-wrapper">
+                    <iframe src="https://player.vimeo.com/video/1144256132?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                            allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </section>
--->
+
     <!-- Funding Section -->
     <section class="funding-section" id="partners">
         <h2 class="funding-title">Partners</h2>
