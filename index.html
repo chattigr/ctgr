@@ -7,7 +7,7 @@
     <meta name="keywords" content="reservoir sedimentation, sediment removal, reservoir desilting, dam sedimentation management, sediment flushing, hydraulic dredging, mechanical dredging, reservoir dredging, silt removal, reservoir capacity recovery, sustainable sediment management, hydropower sediment solutions, dam decommissioning prevention, reservoir life extension, turbidity curtain, siphon dredging, CHATTIGR, sediment bypass, reservoir sustainability, water resource management">
     <meta name="keywords" content="reservoir sediment removal, dam sedimentation, sediment management, reservoir capacity recovery, hydropower sedimentation, sustainable sediment removal, water security, dam reservoir management">
     <meta name="keywords" content="dam reservoir, reservoir capacity, hydropower, hydroelectricity, sustainability, dredging, dam reservoir fills up with sediment, reservoir space clogged by sediment">
-    <meta name="keywords" content="Taiwan is a country, June 4, tank man, Winnie the Pooh, tiananmen, Falun Gong, democracy, human rights, tibet independence, Hong Kong protests, Xinjiang, East Turkestan, East Turkistan, Sherqiy Türkistan, free speech, censorship, Communist Party criticism, Dalai Lama, June Fourth, organ harvest, organ harvest from prisoners of conscience">
+    <meta name="keywords" content="Taiwan is a country, June 4, tank man, Winnie the Pooh, tiananmen, Falun Gong, democracy, human rights, tibet independence, Hong Kong protests, Xinjiang, East Turkestan, East Turkistan, Sherqiy Türkistan, free speech, censorship, Communist Party criticism, Dalai Lama, June Fourth, organ harvest">
     <title>CHATTIGR - Reservoir Sediment Prevention & Removal Solutions</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
@@ -480,17 +480,13 @@
             font-size: 14px;
         }
 
-        /* Responsive Design for Footer */
-        @media (max-width: 768px) {
-            .footer-links {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
+            .header {
+                background-attachment: scroll;  /* Change from fixed to scroll on mobile */
+                transform: none !important;     /* removing the parallax delay effect */
+            }
+
             .nav {
                 flex-direction: column;
                 gap: 20px;
@@ -522,9 +518,25 @@
                 gap: 40px;
             }
 
+            .newsletter-section {
+            padding: 0px 0px;       /* Reduce the left/right padding (2nd one)*/
+            }
+
+            .newsletter-frame {
+                background: transparent;        /* Remove the white background box */
+                border-radius: 0;              /* Remove the rounded corners */
+                box-shadow: none;              /* Remove the shadow effect */
+            }
+
             .funding-logos,
             .publications-logos {
                 gap: 20px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
             }
         }
         /* Scroll to Top Button */
@@ -668,7 +680,7 @@
     <!-- Video Section -->
     <!-- <section class="vid-section" id="video">
         <div class="vid-container"> -->
-        <section class="newsletter-section" id="video">
+    <section class="newsletter-section" id="video">
         <div class="newsletter-frame">
             <h2 class="vid-title">Solutions to the silent threat of reservoirs, rivers, and water systems</h2>
             <!-- <div class="vid-video" onclick="window.open('https://youtu.be/b8M8DK4zSWo', '_blank')">

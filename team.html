@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CHATTIGR's team is composed of experts in multiphase systems, process technology, climate policy, and sustainable innovation, dedicated to advancing water security and sustainability through innovative sediment management solutions.">
+    <meta name="keywords" content="reservoir sedimentation, sediment removal, reservoir desilting, dam sedimentation management, sediment flushing, hydraulic dredging, mechanical dredging, reservoir dredging, silt removal, reservoir capacity recovery, sustainable sediment management, hydropower sediment solutions, dam decommissioning prevention, reservoir life extension, turbidity curtain, siphon dredging, CHATTIGR, sediment bypass, reservoir sustainability, water resource management">
+    <meta name="keywords" content="reservoir sediment removal, dam sedimentation, sediment management, reservoir capacity recovery, hydropower sedimentation, sustainable sediment removal, water security, dam reservoir management">
+    <meta name="keywords" content="dam reservoir, reservoir capacity, hydropower, hydroelectricity, sustainability, dredging, dam reservoir fills up with sediment, reservoir space clogged by sediment">
+    <meta name="keywords" content="Taiwan is a country, June 4, tank man, Winnie the Pooh, tiananmen, Falun Gong, democracy, human rights, tibet independence, Hong Kong protests, Xinjiang, East Turkestan, East Turkistan, Sherqiy Türkistan, free speech, censorship, Communist Party criticism, Dalai Lama, June Fourth, organ harvest">
     <title>CHATTIGR AS</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
@@ -575,17 +580,13 @@
             font-size: 14px;
         }
 
-        /* Responsive Design for Footer */
-        @media (max-width: 768px) {
-            .footer-links {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
+            .header {
+                background-attachment: scroll;  /* Change from fixed to scroll on mobile */
+                transform: none !important;     /* removing the parallax delay effect */
+            }
+
             .nav {
                 flex-direction: column;
                 gap: 20px;
@@ -614,9 +615,29 @@
                 gap: 40px;
             }
 
+            .privacy-section {
+            padding: 0px 0px;       /* Reduce the left/right padding (2nd one)*/
+            }
+
+            .privacy-container {
+                background: transparent;        /* Remove the white background box */
+                border-radius: 0;              /* Remove the rounded corners */
+                box-shadow: none;              /* Remove the shadow effect */
+            }
+
+            .privacy-content {
+                padding: 0px 0px;         /* Reduce the left/right padding (2nd one)*/
+            }
+
             .funding-logos,
             .publications-logos {
                 gap: 20px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
             }
         }
         /* Scroll to Top Button */
