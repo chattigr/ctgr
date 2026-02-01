@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHATTIGR Explainer</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+    }
+    img {
+      max-width: 100%;
+      /* max-height: 95dvh;        ← prevents it from being too tall on phones */
+      height: auto;
+      width: auto;             /* ← lets it shrink but not stretch */
+      box-shadow: 0 0 40px #0008;
+      object-fit: contain;     /* keeps whole image visible */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pass image via ?url= or hard-code it -->
+<img src="" alt="Your photo" id="mainImage">
+<script>
+  const params = new URLSearchParams(window.location.search);
+  document.getElementById("mainImage").src = params.get("url") || "fallback.jpg";
+</script>
+
+</body>
+</html>
