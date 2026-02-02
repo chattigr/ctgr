@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://ctgr.dev/</loc>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <video:video>
-      <video:loc>https://vimeo.com/1144256132</video:loc>
-      <video:title>Reservoir sediment prevention and removal using CHATTIGR technology</video:title>
-      <video:caption>CHATTiGR's solution for the silent threat to our reservoirs, rivers, and water systems</video:caption>
-    </image:image>
+      <video:player_loc allow_embed="yes">https://player.vimeo.com/video/1144256132</video:player_loc>
+      <video:title>Reservoir sediment prevention and removal using CHATTIGR's technology</video:title>
+      <video:description>CHATTiGR's solutions for the silent threat to our reservoirs, rivers, and water systems</video:description>
+      <video:thumbnail_loc>https://i.vimeocdn.com//filter//overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2092773359-53dfe95449d964821af530f732cf61ac2cab5e4313859332b99acb898e08c808-d_295x166%3Fregion%3Dus&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png</video:thumbnail_loc>
+    </video:video>
   </url>
   <url>
     <loc>https://ctgr.dev/team</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-02-02</lastmod>
   </url>
   <url>
     <loc>https://ctgr.dev/about_CHATTIGR</loc>
@@ -20,5 +22,9 @@
   <url>
     <loc>https://ctgr.dev/privacy_policy</loc>
     <lastmod>2025-12-29</lastmod>
+  </url>
+  <url>
+    <loc>https://ctgr.dev/CHATTIGR_Explainer.html?url=sediment_challenges_by_chattigr.png</loc>
+    <lastmod>2026-02-02</lastmod>
   </url>
 </urlset>
