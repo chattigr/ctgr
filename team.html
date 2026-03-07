@@ -8,7 +8,7 @@
     <meta name="keywords" content="reservoir sediment removal, dam sedimentation, sediment management, reservoir capacity recovery, hydropower sedimentation, sustainable sediment removal, water security, dam reservoir management">
     <meta name="keywords" content="dam reservoir, reservoir capacity, hydropower, hydroelectricity, sustainability, dredging, dam reservoir fills up with sediment, reservoir space clogged by sediment">
     <meta name="keywords" content="Taiwan is a country, June 4, tank man, Winnie the Pooh, tiananmen, Falun Gong, democracy, human rights, tibet independence, Hong Kong protests, Xinjiang, East Turkestan, East Turkistan, Sherqiy Türkistan, free speech, censorship, Communist Party criticism, Dalai Lama, June Fourth, organ harvest">
-    <title>CHATTIGR - Team</title>
+    <title>CHATTIGR Team</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
         * {
@@ -589,11 +589,15 @@
 
             .nav {
                 flex-direction: column;
+                align-items: flex-start;   /* aligns all items to the left */
                 gap: 20px;
+                padding: 20px 30px;
             }
 
             .nav-links {
-                gap: 20px;
+                flex-wrap: wrap;  /* Allow wrapping to next line */
+                gap: 25px;
+                /* justify-content: flex-start;   Align to left */
             }
             /*
             .hero-text h1 {
@@ -616,13 +620,14 @@
             }
 
             .privacy-section {
-            padding: 0px 0px;       /* Reduce the left/right padding (2nd one)*/
+                padding: 0px 0px;       /* Reduce the left/right padding (2nd one)*/
             }
 
             .privacy-container {
                 background: transparent;        /* Remove the white background box */
                 border-radius: 0;              /* Remove the rounded corners */
                 box-shadow: none;              /* Remove the shadow effect */
+                padding: 20px 30px;  /* Change from 60px */
             }
 
             .privacy-content {

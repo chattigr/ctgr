@@ -3,7 +3,7 @@
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://ctgr.dev/</loc>
-    <lastmod>2026-02-02</lastmod>
+    <lastmod>2026-03-07</lastmod>
     <video:video>
       <video:player_loc allow_embed="yes">https://player.vimeo.com/video/1144256132</video:player_loc>
       <video:title>Reservoir sediment prevention and removal using CHATTIGR's technology</video:title>
@@ -13,18 +13,18 @@
   </url>
   <url>
     <loc>https://ctgr.dev/team</loc>
-    <lastmod>2026-02-02</lastmod>
+    <lastmod>2026-03-07</lastmod>
   </url>
   <url>
     <loc>https://ctgr.dev/about_CHATTIGR</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-03-07</lastmod>
   </url>
   <url>
     <loc>https://ctgr.dev/privacy_policy</loc>
-    <lastmod>2025-12-29</lastmod>
+    <lastmod>2026-03-07</lastmod>
   </url>
   <url>
     <loc>https://ctgr.dev/CHATTIGR_Explainer.html?url=sediment_challenges_by_chattigr.png</loc>
-    <lastmod>2026-02-02</lastmod>
+    <lastmod>2026-03-07</lastmod>
   </url>
 </urlset>
