@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Water Network Digital Twin — Sandbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#111a2c; --panel2:#0e1626; --line:#243049;
+    --ink:#c7d2e1; --dim:#6b7a93; --faint:#3a4a66;
+    --water:#38bdf8; --murk:#fbbf24; --good:#34d399; --warn:#fbbf24;
+    --alarm:#f87171; --power:#a78bfa; --accent:#22d3ee;
+    --ui: "Inter", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:
+      radial-gradient(1200px 700px at 70% -10%, #16233b 0%, transparent 60%),
+      var(--bg);
+    color:var(--ink); font-family:var(--ui); overflow:hidden;
+  }
+  .app{display:grid; grid-template-columns:206px 1fr 268px; grid-template-rows:48px 1fr; height:100vh}
+  header{
+    grid-column:1/4; display:flex; align-items:center; gap:12px;
+    padding:0 16px; border-bottom:1px solid var(--line); background:var(--panel2);
+  }
+  header .brand{font-weight:700; letter-spacing:.2px; font-size:14px; display:flex; align-items:center; gap:9px}
+  header .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+  header .brand small{color:var(--dim); font-weight:500; font-family:var(--mono); font-size:10.5px; letter-spacing:.5px; text-transform:uppercase}
+  header .spacer{flex:1}
+  .clock{font-family:var(--mono); font-size:11px; color:var(--dim); display:flex; align-items:center; gap:8px}
+  .clock b{color:var(--ink); font-weight:500}
+  .tod{width:54px;height:6px;border-radius:3px;background:linear-gradient(90deg,#0e1626,#1e3a5f,#fbbf24,#1e3a5f,#0e1626);position:relative;border:1px solid var(--line)}
+  .tod i{position:absolute;top:-3px;width:2px;height:10px;background:#fff;border-radius:1px;box-shadow:0 0 6px #fff}
+
+  button.btn, .seg button{
+    font-family:var(--ui); font-size:12px; color:var(--ink); background:var(--panel);
+    border:1px solid var(--line); border-radius:7px; padding:6px 10px; cursor:pointer; transition:.12s;
+  }
+  button.btn:hover{border-color:var(--faint); background:#16223a}
+  button.btn:active{transform:translateY(1px)}
+  button.btn.on{background:#16314a; border-color:var(--accent); color:#cdeefb}
+  button.btn.danger:hover{border-color:var(--alarm); color:#ffd9d9}
+  .seg{display:flex; border:1px solid var(--line); border-radius:7px; overflow:hidden}
+  .seg button{border:0; border-right:1px solid var(--line); border-radius:0; padding:6px 9px}
+  .seg button:last-child{border-right:0}
+  .seg button.on{background:#16314a; color:#cdeefb}
+
+  aside{background:var(--panel2); overflow-y:auto}
+  aside.left{border-right:1px solid var(--line); padding:12px 10px}
+  aside.right{border-left:1px solid var(--line); padding:14px 12px}
+  .eyebrow{font-family:var(--mono); font-size:10px; letter-spacing:1.4px; text-transform:uppercase; color:var(--dim); margin:4px 2px 9px}
+
+  .palette{display:flex; flex-direction:column; gap:5px}
+  .pchip{
+    display:flex; align-items:center; gap:9px; padding:7px 8px; border:1px solid var(--line);
+    border-radius:8px; cursor:pointer; background:var(--panel); transition:.12s; user-select:none;
+  }
+  .pchip:hover{border-color:var(--faint); transform:translateX(2px)}
+  .pchip.armed{border-color:var(--accent); background:#13283c; box-shadow:0 0 0 1px var(--accent) inset}
+  .pchip .g{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:12px;flex:none}
+  .pchip .nm{font-size:12px;font-weight:600;line-height:1.1}
+  .pchip .nm small{display:block;color:var(--dim);font-weight:500;font-size:10px;margin-top:1px}
+
+  main{position:relative; overflow:hidden; background:
+     linear-gradient(0deg,transparent 23px,#16233b22 24px) 0 0/100% 24px,
+     linear-gradient(90deg,transparent 23px,#16233b22 24px) 0 0/24px 100%;}
+  #map{position:absolute; inset:0; display:none; background:#0b1220; z-index:1}
+  body.geo main{background:#0b1220}
+  body.geo #map{display:block}
+  .leaflet-container{background:#0b1220; font-family:var(--mono)}
+  .leaflet-control-attribution{background:#0c1424cc !important; color:var(--dim) !important; font-size:9px}
+  .leaflet-control-attribution a{color:var(--faint) !important}
+  svg.stage{position:absolute; inset:0; width:100%; height:100%; touch-action:none; z-index:2}
+  body.geo svg.stage{pointer-events:none}
+  body.geo svg.stage .node, body.geo svg.stage line{pointer-events:auto}
+  .maplegend{position:absolute; left:12px; bottom:14px; z-index:4; display:none; pointer-events:none;
+    background:#0c1424d9; border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+    font-family:var(--mono); font-size:10px; color:var(--dim); line-height:1.8; backdrop-filter:blur(3px)}
+  body.geo .maplegend{display:block}
+  .maplegend i{display:inline-block; width:18px; height:0; vertical-align:middle; margin-right:7px}
+  .maplegend .l1{border-top:3px solid var(--water)}
+  .maplegend .l2{border-top:2.5px dashed #9a7b4f}
+  .hint{position:absolute; left:50%; bottom:14px; transform:translateX(-50%); font-family:var(--mono);
+    font-size:11px; color:var(--dim); background:#0c1424cc; border:1px solid var(--line); padding:5px 12px;
+    border-radius:20px; pointer-events:none; backdrop-filter:blur(3px); z-index:3}
+
+  .pipe{fill:none; stroke-linecap:round}
+  @keyframes flow{to{stroke-dashoffset:-16}}
+  .pipe.flowing{animation:flow .8s linear infinite}
+  .pipe.power{stroke:var(--power); stroke-width:1.6; stroke-dasharray:1 5; opacity:.85}
+  @media (prefers-reduced-motion: reduce){ .pipe.flowing{animation:none} }
+
+  .node{cursor:grab}
+  .node:active{cursor:grabbing}
+  .node .ring{fill:var(--panel); stroke-width:2.5}
+  body.geo .node .ring{fill:#0f1a2cdd}
+  .node.sel .halo{stroke:var(--accent); stroke-width:1.5; fill:none; opacity:.9}
+  .node text.glyph{font-family:var(--mono); font-weight:700; font-size:13px; fill:var(--ink); text-anchor:middle; dominant-baseline:central; pointer-events:none; paint-order:stroke; stroke:#0b1220; stroke-width:.5px}
+  .node text.lbl{font-family:var(--mono); font-size:9.5px; fill:var(--dim); text-anchor:middle; pointer-events:none; paint-order:stroke; stroke:#0b1220cc; stroke-width:2.6px; stroke-linejoin:round}
+  .node .alarmdot{fill:var(--alarm)}
+  .destroyX{stroke:#ef4444; stroke-width:2.6; stroke-linecap:round; pointer-events:none}
+  .socbar{fill:#0c1424; stroke:var(--line); stroke-width:.6}
+  .socfill{fill:var(--power)}
+
+  .insp h3{margin:0 0 2px; font-size:13px}
+  .insp .sub{font-family:var(--mono); font-size:10px; color:var(--dim); margin-bottom:12px; letter-spacing:.4px}
+  .field{margin-bottom:11px}
+  .field label{display:flex; justify-content:space-between; font-size:11px; color:var(--dim); margin-bottom:4px; font-family:var(--mono)}
+  .field label b{color:var(--ink); font-weight:500}
+  input[type=range]{width:100%; accent-color:var(--accent); height:4px}
+  .readout{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px}
+  .stat{background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:7px 8px}
+  .stat .k{font-family:var(--mono); font-size:9px; color:var(--dim); text-transform:uppercase; letter-spacing:.6px}
+  .stat .v{font-family:var(--mono); font-size:14px; font-weight:500; margin-top:2px}
+  .spark{width:100%; height:40px; margin-top:8px; background:var(--panel); border:1px solid var(--line); border-radius:7px}
+  .empty{color:var(--dim); font-size:12px; line-height:1.5; padding:8px 2px}
+
+  .statkey{font-family:var(--mono); font-size:10px; color:var(--dim); line-height:2}
+  .statkey span{display:inline-block; width:13px; height:13px; border-radius:50%; vertical-align:-2px; margin-right:7px}
+  .statkey .dotreal{border:2.5px solid var(--good)}
+  .statkey .dotprop{border:2.5px dashed var(--dim)}
+  .statkey .dotdead{border:2.5px dotted #b04a55}
+  .alarms{margin-top:18px}
+  .alist{display:flex; flex-direction:column; gap:5px; margin-top:8px}
+  .arow{display:flex; gap:8px; align-items:flex-start; font-size:11px; padding:7px 8px; border:1px solid var(--line); border-radius:7px; background:var(--panel)}
+  .arow .pill{width:7px;height:7px;border-radius:50%;margin-top:3px;flex:none}
+  .arow.crit{border-color:#5b2330; background:#1d1216}
+  .arow.crit .pill{background:var(--alarm); box-shadow:0 0 7px var(--alarm)}
+  .arow.warn .pill{background:var(--warn)}
+  .arow .msg{line-height:1.35}
+  .arow .who{font-family:var(--mono); color:var(--dim); font-size:9.5px; display:block; margin-top:1px}
+  .nominal{font-family:var(--mono); font-size:11px; color:var(--good); padding:8px; border:1px dashed #1f4636; border-radius:7px; background:#0d1a16; margin-top:8px}
+
+  .delbar{margin-top:14px}
+  ::-webkit-scrollbar{width:9px} ::-webkit-scrollbar-thumb{background:#1c2942;border-radius:5px}
+  #intro{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(1100px 650px at 60% -5%, #16233bdd, #070e1af5); backdrop-filter:blur(4px)}
+  #intro.hidden{display:none}
+  .introcard{max-width:560px; margin:18px; max-height:92vh; overflow:auto;
+    background:linear-gradient(180deg,#121d31,#0d1626); border:1px solid var(--line);
+    border-radius:16px; padding:24px 28px 22px; box-shadow:0 32px 90px #000b}
+  .introbadge{font-family:var(--mono); font-size:10px; letter-spacing:2px; color:var(--accent);
+    border:1px solid #1d4a5a; background:#0e2630; padding:4px 10px; border-radius:20px; display:inline-flex; gap:8px; align-items:center}
+  .introbadge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .introcard h2{margin:14px 0 13px; font-size:20px; line-height:1.25; letter-spacing:-.2px}
+  .introcard p{margin:0 0 10px; font-size:12.5px; line-height:1.62; color:#aebbd0}
+  .introcard b{color:#cdeefb; font-weight:600}
+  .introcard .lede b{color:#fff}
+  .introrow{margin-top:16px; display:flex; gap:12px; align-items:center}
+  #introStart{font-size:14px; padding:9px 18px}
+  .introhint{font-family:var(--mono); font-size:10px; color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><span class="dot"></span>HYDRO-TWIN <small>network intelligence sandbox</small></div>
+    <div class="seg" id="modeSeg">
+      <button data-m="schematic" title="Abstract topology view">◳ Schematic</button>
+      <button data-m="geo" class="on" title="Real map — Dnipro–Kryvyi Rih corridor">◉ Geographic</button>
+    </div>
+    <div class="spacer"></div>
+    <div class="seg" id="injects">
+      <button data-ev="bloom" title="Raise algal bloom at a remote-sensing node">Algal bloom</button>
+      <button data-ev="turb" title="Turbidity spike at a source">Turbidity spike</button>
+      <button data-ev="burst" title="Open a leak / pipe burst">Pipe burst</button>
+      <button data-ev="strike" title="Cut the power grid">Grid strike</button>
+    </div>
+    <div class="seg">
+      <button id="gridBtn" class="on" title="Toggle mains power grid">Grid</button>
+      <button id="autoBtn" class="on" title="Auto day/night cycle">Day/Night</button>
+    </div>
+    <div class="clock"><span class="tod"><i id="todMark"></i></span><b id="todTxt">12:00</b></div>
+    <div class="seg">
+      <button id="playBtn" class="on">⏸ Pause</button>
+      <button id="speedBtn">1×</button>
+      <button id="resetBtn" class="danger">Reset</button>
+    </div>
+    <div class="seg">
+      <button id="exportBtn" title="Download network as JSON">Export</button>
+      <button id="importBtn" title="Load network from JSON">Import</button>
+    </div>
+    <input type="file" id="fileIn" accept="application/json" hidden>
+  </header>
+
+  <aside class="left">
+    <div class="eyebrow">Place a unit</div>
+    <div class="palette" id="palette"></div>
+    <div class="eyebrow" style="margin-top:16px">Connect</div>
+    <div class="seg" style="width:100%">
+      <button id="connFlow" style="flex:1" title="Click two nodes: water flows first→second">Pipe</button>
+      <button id="connPower" style="flex:1" title="Click a power node, then a unit to energize">Power</button>
+    </div>
+    <div class="empty" style="font-size:10.5px; margin-top:10px; line-height:1.5">
+      Click a unit then click the canvas (or map) to drop it. Drag to move. Click a node or pipe to inspect.
+    </div>
+    <div class="eyebrow" style="margin-top:16px">Status</div>
+    <div class="statkey">
+      <div><span class="dotreal"></span>existing · real location</div>
+      <div><span class="dotprop"></span>proposed · hypothetical</div>
+      <div><span class="dotdead"></span>destroyed · out of service</div>
+    </div>
+  </aside>
+
+  <main>
+    <div id="map"></div>
+    <svg class="stage" id="stage" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet">
+      <g id="edges"></g>
+      <g id="nodes"></g>
+    </svg>
+    <div class="hint" id="hint">Live scenario running — try “Grid strike”, then watch the pump and town</div>
+    <div class="maplegend">
+      <div><i class="l1"></i>Inhulets–Pivdenne main · indicative</div>
+      <div><i class="l2"></i>Dnipro–Kryvyi Rih canal · dry (surveyed)</div>
+    </div>
+  </main>
+
+  <aside class="right">
+    <div class="insp" id="inspector"></div>
+    <div class="alarms">
+      <div class="eyebrow">Alarms <span id="alarmCount" style="color:var(--dim)"></span></div>
+      <div class="alist" id="alarmList"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="intro" onclick="if(event.target===this)dismissIntro()">
+  <div class="introcard">
+    <div class="introbadge"><span class="dot"></span>DIGITAL TWIN · INTERACTIVE DEMO</div>
+    <h2>Water-network digital twin — Kryvyi Rih, Ukraine</h2>
+    <p class="lede">You're about to explore an interactive <b>digital twin</b> of the water system supplying <b>Kryvyi Rih</b>, central Ukraine — a live, simulated mirror of real infrastructure. A twin lets operators and planners see how one disruption ripples through the whole network, and test interventions before committing concrete — decisive when rebuilding under wartime conditions.</p>
+    <p><b>Background.</b> Kryvyi Rih draws on two sources. Locally, the <b>Inhulets River</b> feeds the <b>Karachunivske Reservoir</b>. Regionally, the <b>Dnipro River's Kakhovka Reservoir</b> fed the Dnipro–Kryvyi Rih Canal, lifting water northwest to the <b>Pivdenne (Southern) Reservoir</b>. The <b>Kakhovka Hydropower Plant</b> (335 MW), at the reservoir's southern dam, also powered the regional grid via the Kakhovska substation (serving the Kherson/Zaporizhzhia/Kryvyi Rih region). On <b>6 June 2023</b>, Russian forces destroyed the dam — the reservoir drained, the canal went dry, and the city switched to pumping Inhulets water uphill.</p>
+    <p>This twin includes the river intake, sediment unit, pumping stations, solar-and-battery backup, treatment and wastewater plants, quality sensors, leak detection, SCADA, and the destroyed hydropower plant.</p>
+    <p>Try an incident — <b>Turbidity spike</b>, <b>Pipe burst</b>, or <b>Grid strike</b> — and watch how the twin predicts and explains the way each failure unfolds.</p>
+    <div class="introrow">
+      <button id="introStart" class="btn on">Start exploring →</button>
+      <span class="introhint">existing · proposed · destroyed units are marked differently</span>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ----------------------------------------------------------------------------
+   Water Network Digital Twin — single-file demonstrator
+   Two views of one model: SCHEMATIC (abstract x/y) and GEOGRAPHIC (real lat/lon
+   over an OSM/CARTO basemap, Leaflet). Every node carries BOTH coordinate sets;
+   the active view decides which drives rendering. Simulation is view-agnostic.
+   Geographic coordinates here approximate the Dnipro–Kryvyi Rih canal corridor.
+---------------------------------------------------------------------------- */
+
+const TYPES = {
+  source:  {g:"R", c:"#60a5fa", label:"River intake",        sub:"raw source",      power:false, defaults:{flow:8, turb:14}},
+  remote:  {g:"◎", c:"#818cf8", label:"Remote sensing",      sub:"level / bloom",   power:false, defaults:{level:62, bloom:10}},
+  asms:    {g:"⟳", c:"#22d3ee", label:"Sediment unit",  sub:"vortex / dredge", power:false, defaults:{removal:70}},
+  pump:    {g:"P", c:"#38bdf8", label:"Pumping station",     sub:"needs power",     power:true,  defaults:{cap:10}},
+  solar:   {g:"☀", c:"#a78bfa", label:"Solar + battery",     sub:"power source",    power:false, defaults:{gen:8, soc:80}},
+  hydro:   {g:"⚡", c:"#c084fc", label:"Hydropower plant",     sub:"baseload power",  power:false, defaults:{gen:50}},
+  dwt:     {g:"◆", c:"#34d399", label:"Drinking treatment",  sub:"UF / RO",         power:true,  defaults:{}},
+  wwt:     {g:"≈", c:"#2dd4bf", label:"Wastewater (modular)",sub:"MBR / SBR",       power:true,  defaults:{cap:9}},
+  sensor:  {g:"◔", c:"#fbbf24", label:"Quality sensor",      sub:"turbidity probe", power:false, defaults:{thr:5}},
+  leak:    {g:"!", c:"#fb923c", label:"Leak detection",      sub:"flow loss",       power:false, defaults:{rate:2, thr:8}},
+  scada:   {g:"⊞", c:"#94a3b8", label:"SCADA controller",    sub:"aggregator",      power:false, defaults:{auto:1}},
+  demand:  {g:"⌂", c:"#f472b6", label:"Town / demand",       sub:"population",      power:false, defaults:{need:6}},
+};
+
+/* geographic bounds used to map the schematic canvas <-> the corridor */
+const BOUNDS={n:47.97,s:46.70,w:33.18,e:34.02};
+/* Real Dnipro-Kryvyi Rih canal geometry (OpenStreetMap, ODbL) — 12 ways, 327 vertices */
+const CANAL_ROUTE=[[[47.86614,33.50121],[47.86832,33.50432],[47.86875,33.50491],[47.86918,33.50537],[47.86996,33.50589],[47.87692,33.50984],[47.88216,33.51278],[47.88483,33.5143],[47.88611,33.51504],[47.8868,33.51536],[47.88754,33.51561],[47.88815,33.51575],[47.88891,33.51586],[47.88958,33.51584],[47.8902,33.51577],[47.89153,33.51543],[47.89334,33.51494],[47.9345,33.5038],[47.93607,33.50341],[47.94044,33.50222],[47.94133,33.50197],[47.94229,33.50173],[47.94362,33.50186],[47.94507,33.50232],[47.94615,33.50308],[47.9474,33.50436],[47.95132,33.51007],[47.95354,33.51323],[47.95433,33.51438],[47.95677,33.5179],[47.9584,33.52028],[47.95862,33.52059],[47.95886,33.52086],[47.95908,33.52105],[47.95932,33.52121],[47.95964,33.52133],[47.95997,33.52139],[47.96073,33.52135],[47.96135,33.52126],[47.96323,33.52114],[47.96823,33.52072],[47.97435,33.52027],[47.97711,33.5201],[47.97744,33.52012],[47.97784,33.52025],[47.97863,33.52055],[47.97941,33.52084],[47.9811,33.52147],[47.98502,33.52284],[47.98673,33.52345],[47.98772,33.52369],[47.9881,33.52363],[47.9884,33.52352],[47.9888,33.52322],[47.98909,33.52283],[47.98935,33.52239]],[[47.41992,34.04134],[47.44086,34.03255],[47.45479,34.02569],[47.46663,34.02088],[47.47649,34.01762],[47.48595,34.0141],[47.49499,34.01196],[47.50276,34.00964],[47.5074,34.00706],[47.51036,34.0032],[47.51175,33.99865],[47.51352,33.98762],[47.51514,33.98131],[47.5174,33.97582],[47.52007,33.97157],[47.52236,33.96925],[47.52543,33.96758],[47.52824,33.96535],[47.53044,33.9626],[47.5325,33.9578],[47.53433,33.95355],[47.53624,33.95106],[47.53806,33.9493],[47.53985,33.94809],[47.54126,33.94713],[47.54261,33.94626],[47.54337,33.94541],[47.54408,33.94438],[47.54472,33.94332],[47.54528,33.94183],[47.54558,33.94079],[47.54593,33.93932],[47.54612,33.93828],[47.54613,33.93813],[47.54613,33.938],[47.54612,33.93778],[47.54608,33.93744],[47.54602,33.93703],[47.54597,33.9367],[47.54596,33.93637],[47.546,33.93604],[47.54609,33.93581],[47.54623,33.93559],[47.54644,33.93524],[47.54688,33.93464],[47.54732,33.93411],[47.54785,33.93337],[47.54838,33.93269],[47.54881,33.9321],[47.54921,33.9316],[47.54961,33.93104],[47.54979,33.93078],[47.55008,33.93035],[47.55031,33.93001],[47.55057,33.92979],[47.55083,33.92963],[47.55109,33.92957],[47.55156,33.92956],[47.55229,33.92956],[47.5531,33.92957],[47.55375,33.92956],[47.55433,33.92957],[47.55502,33.92956],[47.55565,33.92957],[47.55611,33.92957],[47.55655,33.92951],[47.55691,33.92941],[47.55731,33.92925],[47.55765,33.92901],[47.55804,33.92872],[47.55852,33.92831],[47.55911,33.92776],[47.55996,33.92691],[47.56167,33.92518],[47.56258,33.92424],[47.56297,33.92386],[47.5633,33.92358],[47.56376,33.92313],[47.56404,33.92289],[47.56424,33.92269],[47.56444,33.92247],[47.56458,33.92227],[47.56471,33.92205],[47.56481,33.92178],[47.56492,33.92145],[47.565,33.92114],[47.56504,33.92081],[47.56506,33.92051],[47.56507,33.92021],[47.56502,33.91989],[47.56495,33.9197],[47.56484,33.91955],[47.56473,33.91936],[47.56464,33.91916],[47.56462,33.91896]],[[47.99197,33.51603],[47.99213,33.51555]],[[47.99213,33.51555],[47.99265,33.51385],[47.99328,33.51171],[47.99338,33.51132],[47.99352,33.51102],[47.99358,33.51087],[47.99365,33.51057],[47.9937,33.51031],[47.99352,33.50988],[47.99343,33.50967],[47.9934,33.50924],[47.99367,33.50909],[47.99399,33.50907],[47.99445,33.50907],[47.99489,33.50905],[47.99543,33.50847],[47.99559,33.5083],[47.9958,33.50809],[47.99588,33.50801],[47.99594,33.50795],[47.99643,33.50725],[47.99684,33.50664],[47.99726,33.50624],[47.99769,33.50576],[47.99809,33.5054],[47.99812,33.50539],[47.99962,33.50483],[48.00133,33.50417]],[[47.98947,33.52215],[47.98958,33.52196],[47.99016,33.52094]],[[47.99016,33.52094],[47.99019,33.52088],[47.99031,33.52068]],[[47.98935,33.52239],[47.98939,33.52232],[47.98947,33.52215]],[[47.99031,33.52068],[47.9908,33.51978],[47.99146,33.51774],[47.99197,33.51603]],[[47.56462,33.91896],[47.56464,33.91761],[47.5646,33.91734],[47.56458,33.91722]],[[47.5644,33.9011],[47.5644,33.90096],[47.56445,33.90048],[47.56476,33.8998],[47.56475,33.89906],[47.5647,33.89808],[47.5646,33.89743],[47.56438,33.8966],[47.56138,33.89004],[47.55806,33.88273],[47.55765,33.88135],[47.55732,33.8794],[47.55727,33.87794],[47.55727,33.87703],[47.55732,33.8761],[47.55749,33.87525],[47.55764,33.87436],[47.55849,33.87133],[47.55933,33.86821],[47.56207,33.85851],[47.56244,33.85725],[47.56278,33.85597],[47.56302,33.85489],[47.56316,33.85381],[47.56321,33.85297],[47.5632,33.85206],[47.56317,33.85126],[47.56308,33.85039],[47.56276,33.84898],[47.56254,33.84792],[47.56304,33.84621],[47.56288,33.84531]],[[47.56288,33.84531],[47.56284,33.84508],[47.56277,33.8448],[47.56264,33.84435],[47.56231,33.84396],[47.56207,33.84378]],[[47.56207,33.84378],[47.56134,33.84315],[47.56126,33.84278],[47.56118,33.84243],[47.56095,33.8414],[47.5608,33.84062],[47.56069,33.83981],[47.56069,33.83892],[47.5607,33.83829],[47.56077,33.8377],[47.5609,33.83704],[47.56109,33.83642],[47.56144,33.83537],[47.56323,33.83022],[47.569,33.81387],[47.58695,33.76318],[47.58897,33.75737],[47.58961,33.75572],[47.59013,33.75464],[47.59058,33.75383],[47.59171,33.75224],[47.60265,33.73697],[47.60912,33.72792],[47.61522,33.71943],[47.62173,33.71034],[47.62732,33.70251],[47.63259,33.69512],[47.634,33.69317],[47.63431,33.69275],[47.63453,33.69245],[47.63457,33.69239],[47.6354,33.69126],[47.63629,33.69018],[47.63747,33.68922],[47.63833,33.68879],[47.65073,33.68195],[47.66119,33.67625],[47.66368,33.67489],[47.66995,33.67141],[47.67124,33.67072],[47.67245,33.67001],[47.6731,33.66957],[47.67367,33.66907],[47.67405,33.66871],[47.6745,33.66826],[47.67933,33.66267],[47.68576,33.65529],[47.69796,33.64128],[47.70783,33.62995],[47.71556,33.6211],[47.71933,33.61674],[47.72317,33.61237],[47.72361,33.61179],[47.72563,33.60955],[47.72963,33.60495],[47.73369,33.6003],[47.73809,33.59523],[47.7424,33.59025],[47.74444,33.58794],[47.7465,33.58559],[47.74836,33.58341],[47.75028,33.58124],[47.75198,33.57929],[47.75377,33.57724],[47.75621,33.57444],[47.75863,33.5716],[47.76048,33.56954],[47.76224,33.5675],[47.76559,33.56366],[47.76781,33.56106],[47.76872,33.56008],[47.7696,33.55904],[47.77053,33.5579],[47.77138,33.55698],[47.77311,33.55489],[47.77384,33.55404],[47.77439,33.55334],[47.77508,33.55268],[47.77624,33.55209],[47.77702,33.55188],[47.77757,33.55187],[47.77812,33.55204],[47.77885,33.5523],[47.77946,33.55271],[47.77967,33.55292],[47.77998,33.55319],[47.78046,33.55381],[47.78085,33.55447],[47.78105,33.55486],[47.78148,33.55571],[47.78157,33.5559]]];
+/* Inhulets–Pivdenne trunk main — INDICATIVE: vertices are real OSM pump stations,
+   the line between them is NOT a surveyed alignment. Replace with real geometry when available. */
+const MAIN_ROUTE=[[[47.93385,33.2137],[47.88707,33.25648],[47.87957,33.39676],[47.851,33.4883],[47.84977,33.53263],[47.82102,33.53598]]];
+function schematicToGeo(x,y){ return {lon: BOUNDS.w+(x/1000)*(BOUNDS.e-BOUNDS.w), lat: BOUNDS.n-(y/680)*(BOUNDS.n-BOUNDS.s)}; }
+function geoToSchematic(lat,lon){ return {x:(lon-BOUNDS.w)/(BOUNDS.e-BOUNDS.w)*1000, y:(BOUNDS.n-lat)/(BOUNDS.n-BOUNDS.s)*680}; }
+
+let S, uid=1, dragging=null, connectMode=null, connectFrom=null, placeType=null, paused=false, speed=1;
+let mapObj=null;
+const $ = s=>document.querySelector(s);
+const svg=$("#stage"), gEdges=$("#edges"), gNodes=$("#nodes");
+
+/* ---- starter scenario: the Dnipro–Kryvyi Rih corridor --------------------- */
+function seed(){
+  S={nodes:{},edges:{},mode:"schematic",tod:0.5,tick:0,grid:true,autoTod:true,selNode:null,selEdge:null};
+  uid=1;
+  // N(type, schematicX, schematicY, lat, lon, params)
+  // Geo coords are SURVEY-GRADE where marked [OSM] (OpenStreetMap, ODbL); others are
+  // illustrative placements on the corridor. System: Inhulets/Karachunivske reservoir ->
+  // pump lifts -> Pivdenne reservoir -> Kryvyi Rih. The Dnipro/Kakhovka canal is drawn along
+  // its real alignment as a DRY (zero-flow) branch; its source drained in June 2023.
+  const N=(t,x,y,lat,lon,p={},real=true)=>{const id="n"+(uid++);S.nodes[id]={id,type:t,x,y,lat,lon,real,p:{...TYPES[t].defaults,...p},st:{}};return id;};
+  // --- active line: Karachunivske (Inhulets) -> Pivdenne -> city ---
+  const src =N("source", 50,250, 47.93385,33.21370,{flow:8,turb:22}); // [OSM] Karachunivske reservoir (raw, mining-laden)
+  const rem =N("remote",155,250, 47.91500,33.22500,{},false);                  // Karachunivske reservoir sensing
+  const ns1 =N("pump",  260,250, 47.88707,33.25648,{cap:9});          // [OSM] intake pumping station "VNS No.35"
+  const asm =N("asms",  360,250, 47.88300,33.31000,{removal:75},false);     // Inhulets sediment / dredge unit
+  const ns2 =N("pump",  460,250, 47.87957,33.39676,{cap:9});          // [OSM] pumping station "Nasosna No.2"
+  const ns3 =N("pump",  565,250, 47.85100,33.48830,{cap:9});          // [OSM] pumping station "Miska nasosna"
+  const piv =N("dwt",   675,250, 47.84977,33.53263);                  // [OSM] Pivdenne pump/filtration hub (reservoir 47.821,33.536)
+  const sol =N("solar", 460,400, 47.84000,33.40000,{},false);                  // backup power at pump stations (standby gensets in reality)
+  const sen =N("sensor",785,210, 47.87500,33.46000,{thr:5},false);          // quality probe on distribution main
+  const leak=N("leak",  785,320, 47.89000,33.42000,{rate:2},false);         // monitored main segment (inline to city)
+  const town=N("demand",905,200, 47.91000,33.39000,{need:7});         // Kryvyi Rih city
+  const ww  =N("wwt",   905,360, 47.81747,33.31401);                  // [OSM] "Pivdenna aeration station" (city wastewater)
+  const sc  =N("scada", 675,400, 47.90500,33.40500,{},false);                  // Kryvyi Rih Vodokanal control
+  // --- historic Dnipro-Kryvyi Rih canal, now DRY (real OSM alignment) ---
+  const dni =N("source", 60,570, 47.49249,33.98015,{flow:0,turb:18}); // [OSM] canal intake at former Kakhovka reservoir
+  const cps =N("pump",  205,570, 47.50162,33.93029,{cap:9});          // [OSM] canal pump station nearest former reservoir
+  const nfs =N("dwt",   385,520, 47.65914,33.69187);                  // [OSM] mid-canal filtration station "NFS"
+  const khpp=N("hydro",  60,648, 46.77820,33.37000,{gen:335});        // [OSM] Kakhovka HPP — 335 MW, DESTROYED 6 Jun 2023
+  S.nodes[khpp].status="destroyed";
+  const E=(a,b,k="pipe")=>{const id="e"+(uid++);S.edges[id]={id,from:a,to:b,kind:k,st:{}};};
+  E(src,rem);E(rem,ns1);E(ns1,asm);E(asm,ns2);E(ns2,ns3);E(ns3,piv);E(piv,sen);E(sen,leak);E(leak,town);
+  E(dni,cps);E(cps,nfs);E(nfs,piv);E(khpp,dni);   // dead canal + the destroyed Kakhovka HPP whose reservoir fed it
+  E(town,ww);
+  E(sol,ns1,"power");E(sol,ns2,"power");E(sol,ns3,"power");E(sol,piv,"power");
+}
+
+/* ---- geometry helpers ----------------------------------------------------- */
+function toSvg(evt){const pt=svg.createSVGPoint();pt.x=evt.clientX;pt.y=evt.clientY;const m=svg.getScreenCTM().inverse();const p=pt.matrixTransform(m);return{x:p.x,y:p.y};}
+function screenXY(n){ if(S.mode==="geo" && mapObj){ const p=mapObj.latLngToContainerPoint([n.lat,n.lon]); return {x:p.x,y:p.y}; } return {x:n.x,y:n.y}; }
+function lerp(a,b,t){return a+(b-a)*t;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function mix(c1,c2,t){const a=hex(c1),b=hex(c2);return `rgb(${Math.round(lerp(a[0],b[0],t))},${Math.round(lerp(a[1],b[1],t))},${Math.round(lerp(a[2],b[2],t))})`;}
+function hex(h){const n=parseInt(h.slice(1),16);return[(n>>16)&255,(n>>8)&255,n&255];}
+function turbColor(t,flow){ if(flow<=0.01) return "#2a3650"; return mix("#38bdf8","#fbbf24", clamp(t/40,0,1)); }
+
+/* ---- solar / power -------------------------------------------------------- */
+function solarFactor(){ return Math.max(0, Math.sin(S.tod*Math.PI)); }
+function powerNodes(){ return Object.values(S.nodes).filter(n=>n.type==="solar"); }
+function poweredBySolar(id){
+  return Object.values(S.edges).some(e=>e.kind==="power" &&
+     ((e.from===id||e.to===id)) &&
+     [e.from,e.to].some(o=>{const p=S.nodes[o];return p&&p.type==="solar"&&p.st.soc>0;}));
+}
+function poweredBySource(id){
+  return Object.values(S.edges).some(e=>e.kind==="power" && (e.from===id||e.to===id) &&
+     [e.from,e.to].some(o=>{const p=S.nodes[o]; if(!p||p.status==="destroyed") return false;
+       if(p.type==="solar") return (p.st.soc??p.p.soc)>0;
+       if(p.type==="hydro") return true; return false; }));
+}
+function isPowered(n){ if(!TYPES[n.type].power) return true; return S.grid || poweredBySource(n.id); }
+
+/* ---- simulation tick ------------------------------------------------------ */
+function step(){
+  S.tick++;
+  if(S.autoTod){ S.tod += 0.0026*speed; if(S.tod>1) S.tod-=1; }
+  for(const n of Object.values(S.nodes)){ if(n.st.fx) n.st.fx*=0.96; if(Math.abs(n.st.fx||0)<0.05) n.st.fx=0; }
+  const sf=solarFactor();
+  for(const p of powerNodes()){
+    const consumers = Object.values(S.edges).filter(e=>e.kind==="power"&&(e.from===p.id||e.to===p.id)).map(e=>e.from===p.id?e.to:e.from).filter(cid=>{const c=S.nodes[cid];return c&&TYPES[c.type].power;}).length;
+    if(S.grid){ p.st.soc = clamp((p.st.soc??p.p.soc) + sf*0.6 + 0.4, 0, 100); }
+    else { const gen=sf*(p.p.gen/8)*1.4, draw=consumers*1.1; p.st.soc=clamp((p.st.soc??p.p.soc)+gen-draw,0,100); }
+  }
+  propagate(); evaluate();
+}
+function incoming(id){ return Object.values(S.edges).filter(e=>e.kind==="pipe"&&e.to===id); }
+function outgoingPipes(id){ return Object.values(S.edges).filter(e=>e.kind==="pipe"&&e.from===id); }
+function propagate(){
+  for(const e of Object.values(S.edges)){ if(e.kind==="pipe"){ e.st={flow:0,turb:0,potable:false}; } }
+  const indeg={}, ids=Object.keys(S.nodes);
+  ids.forEach(i=>indeg[i]=incoming(i).length);
+  const q=ids.filter(i=>indeg[i]===0), order=[];
+  while(q.length){ const i=q.shift(); order.push(i); outgoingPipes(i).forEach(e=>{ if(--indeg[e.to]===0) q.push(e.to); }); }
+  ids.forEach(i=>{ if(!order.includes(i)) order.push(i); });
+  for(const id of order){
+    const n=S.nodes[id], T=n.type, ins=incoming(id);
+    const inFlow = ins.reduce((s,e)=>s+e.st.flow,0);
+    const inTurb = inFlow>0 ? ins.reduce((s,e)=>s+e.st.flow*e.st.turb,0)/inFlow : 0;
+    const inPot  = ins.length>0 && ins.every(e=>e.st.potable);
+    let oF=inFlow, oT=inTurb, oP=inPot;
+    if(T==="source"){ oF=n.p.flow; oT=n.p.turb + (n.st.fx||0); oP=false; }
+    else if(T==="remote"){ oT=inTurb + (n.p.bloom + (n.st.fx||0))*0.18; n.st.level=n.p.level; n.st.bloom=n.p.bloom+(n.st.fx||0); }
+    else if(T==="pump"){ const on=isPowered(n); n.st.on=on; oF= on? Math.min(inFlow,n.p.cap):0; }
+    else if(T==="asms"){ oT=inTurb*(1-n.p.removal/100); }
+    else if(T==="dwt"){ const on=isPowered(n); n.st.on=on; if(on){oT=Math.min(inTurb,0.6); oP=inFlow>0;} else {oP=false;} }
+    else if(T==="wwt"){ const on=isPowered(n); n.st.on=on; n.st.over=inFlow>n.p.cap; oT=on?inTurb*0.4:inTurb; }
+    else if(T==="sensor"){ n.st.read=inTurb; }
+    else if(T==="leak"){ oF=inFlow*(1-n.p.rate/100); n.st.loss=inFlow-oF; }
+    else if(T==="demand"){ n.st.supplied=inFlow; n.st.cover=n.p.need>0?inFlow/n.p.need:1; n.st.potable=inPot; }
+    if(n.status==="destroyed"){ oF=0; oP=false; }
+    n.st.inFlow=inFlow; n.st.outFlow=oF; n.st.outTurb=oT; n.st.potable=oP;
+    const outs=outgoingPipes(id); const share=outs.length?oF/outs.length:0;
+    outs.forEach(e=>{ e.st={flow:share,turb:oT,potable:oP}; });
+  }
+}
+let ALARMS=[];
+function evaluate(){
+  ALARMS=[];
+  const add=(sev,id,msg)=>ALARMS.push({sev,id,msg,who:nodeLabel(id)});
+  for(const n of Object.values(S.nodes)){
+    const T=n.type;
+    if(n.status==="destroyed") continue;
+    if(T==="sensor" && n.st.read>n.p.thr) add(n.st.read>n.p.thr*3?"crit":"warn",n.id,`Turbidity ${n.st.read.toFixed(1)} NTU exceeds ${n.p.thr} NTU limit`);
+    if(T==="pump" && n.st.on===false && n.st.inFlow>0) add("crit",n.id,"Pump unpowered — flow stopped");
+    if(T==="dwt" && n.st.on===false && n.st.inFlow>0) add("crit",n.id,"Treatment offline — water not potable");
+    if(T==="wwt" && n.st.over) add("warn",n.id,`Inflow ${n.st.inFlow.toFixed(1)} over capacity ${n.p.cap}`);
+    if(T==="solar" && (n.st.soc??n.p.soc)<15) add("warn",n.id,`Battery low (${Math.round(n.st.soc??n.p.soc)}%)`);
+    if(T==="leak" && n.p.rate>n.p.thr) add("crit",n.id,`Leak ${n.p.rate}% exceeds ${n.p.thr}% — segment loss ${(n.st.loss||0).toFixed(1)}`);
+    if(T==="demand"){
+      if(n.st.cover<0.95) add(n.st.cover<0.6?"crit":"warn",n.id,`Supply at ${Math.round((n.st.cover||0)*100)}% of demand`);
+      else if(!n.st.potable) add("crit",n.id,"Receiving non-potable water");
+    }
+  }
+  for(const n of Object.values(S.nodes)){ if(n.type==="scada"){ n.st.crit=ALARMS.filter(a=>a.sev==="crit").length; n.st.warn=ALARMS.filter(a=>a.sev==="warn").length; } }
+}
+function nodeLabel(id){const n=S.nodes[id];return n?TYPES[n.type].label+" "+id.replace("n","#"):id;}
+function nodeColor(n){
+  if(n.status==="destroyed") return "#b04a55";
+  if(n.type==="solar") return TYPES.solar.c;
+  if(n.type==="hydro") return TYPES.hydro.c;
+  const a=ALARMS.filter(x=>x.id===n.id);
+  if(a.some(x=>x.sev==="crit")) return "var(--alarm)";
+  if(a.some(x=>x.sev==="warn")) return "var(--warn)";
+  if(TYPES[n.type].power && !isPowered(n)) return "#4b5b78";
+  return "var(--good)";
+}
+
+/* ---- rendering ------------------------------------------------------------ */
+function render(){
+  gEdges.innerHTML="";
+  for(const e of Object.values(S.edges)){
+    const a=S.nodes[e.from], b=S.nodes[e.to]; if(!a||!b) continue;
+    const pa=screenXY(a), pb=screenXY(b);
+    const ln=document.createElementNS("http://www.w3.org/2000/svg","line");
+    ln.setAttribute("x1",pa.x);ln.setAttribute("y1",pa.y);ln.setAttribute("x2",pb.x);ln.setAttribute("y2",pb.y);
+    ln.dataset.id=e.id; ln.style.cursor="pointer";
+    if(e.kind==="power"){ ln.setAttribute("class","pipe power"); }
+    else{
+      const f=e.st.flow||0;
+      ln.setAttribute("stroke",turbColor(e.st.turb||0,f));
+      ln.setAttribute("stroke-width", f>0.01 ? clamp(2+f*0.9,2,11) : 2);
+      let cls="pipe"; if(f>0.01){ cls+=" flowing"; ln.setAttribute("stroke-dasharray","7 5"); } else { ln.setAttribute("stroke-dasharray","2 6"); ln.setAttribute("opacity",".5"); }
+      ln.setAttribute("class",cls);
+    }
+    if(S.selEdge===e.id) ln.setAttribute("stroke","var(--accent)");
+    gEdges.appendChild(ln);
+  }
+  gNodes.innerHTML="";
+  for(const n of Object.values(S.nodes)){
+    const T=TYPES[n.type], P=screenXY(n);
+    const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("class","node"+(S.selNode===n.id?" sel":"")); g.setAttribute("transform",`translate(${P.x},${P.y})`); g.dataset.id=n.id;
+    const col=nodeColor(n);
+    if(S.selNode===n.id){g.appendChild(circle(0,0,29,"halo"));}
+    const destroyed=n.status==="destroyed";
+    const ring=circle(0,0,21,"ring"); ring.setAttribute("stroke",col); if(n.real===false) ring.setAttribute("stroke-dasharray","5 4"); if(destroyed) ring.setAttribute("stroke-dasharray","2 3"); g.appendChild(ring);
+    if(destroyed){ g.setAttribute("opacity","0.92"); g.appendChild(xline(-11,-11,11,11)); g.appendChild(xline(-11,11,11,-11)); }
+    if(T.power){const pdot=circle(15,-15,3.4,"");pdot.setAttribute("fill",isPowered(n)?"var(--power)":"#33415c");g.appendChild(pdot);}
+    const gl=document.createElementNS("http://www.w3.org/2000/svg","text"); gl.setAttribute("class","glyph"); gl.setAttribute("fill",col); gl.textContent=T.g; g.appendChild(gl);
+    const lb=document.createElementNS("http://www.w3.org/2000/svg","text"); lb.setAttribute("class","lbl"); lb.setAttribute("y",34); lb.textContent=shortLabel(n); g.appendChild(lb);
+    if(n.type==="solar"){ const soc=clamp(n.st.soc??n.p.soc,0,100); g.appendChild(rect(-14,26,28,4,"socbar")); g.appendChild(rect(-14,26,28*soc/100,4,"socfill")); }
+    if(ALARMS.some(a=>a.id===n.id)){g.appendChild(circle(16,-15,4,"alarmdot"));}
+    gNodes.appendChild(g);
+  }
+  renderInspector(); renderAlarms();
+  const hh=Math.floor(S.tod*24), mm=Math.floor((S.tod*24-hh)*60);
+  $("#todTxt").textContent=String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0");
+  $("#todMark").style.left=(S.tod*100)+"%";
+}
+function shortLabel(n){
+  if(n.type==="demand") return Math.round((n.st.cover||0)*100)+"%";
+  if(n.type==="sensor") return (n.st.read||0).toFixed(1)+"N";
+  if(n.type==="solar") return Math.round(n.st.soc??n.p.soc)+"%";
+  if(n.type==="hydro") return n.status==="destroyed"?"OFF":(n.p.gen+"MW");
+  if(n.type==="source") return (n.p.flow)+"m³";
+  if(n.st.outFlow!=null && TYPES[n.type].power) return (n.st.outFlow||0).toFixed(1);
+  return TYPES[n.type].label.split(" ")[0];
+}
+function xline(x1,y1,x2,y2){const l=document.createElementNS("http://www.w3.org/2000/svg","line");l.setAttribute("x1",x1);l.setAttribute("y1",y1);l.setAttribute("x2",x2);l.setAttribute("y2",y2);l.setAttribute("class","destroyX");return l;}
+function circle(cx,cy,r,cls){const c=document.createElementNS("http://www.w3.org/2000/svg","circle");c.setAttribute("cx",cx);c.setAttribute("cy",cy);c.setAttribute("r",r);if(cls)c.setAttribute("class",cls);return c;}
+function rect(x,y,w,h,cls){const r=document.createElementNS("http://www.w3.org/2000/svg","rect");r.setAttribute("x",x);r.setAttribute("y",y);r.setAttribute("width",Math.max(0,w));r.setAttribute("height",h);r.setAttribute("rx",2);if(cls)r.setAttribute("class",cls);return r;}
+
+/* ---- inspector ------------------------------------------------------------ */
+const SPARK={};
+function renderInspector(){
+  const box=$("#inspector");
+  if(S.selEdge){
+    const e=S.edges[S.selEdge];
+    box.innerHTML=`<div class="insp"><h3>${e.kind==="power"?"Power link":"Pipe"}</h3>
+      <div class="sub">${nodeLabel(e.from)} → ${nodeLabel(e.to)}</div>
+      ${e.kind==="pipe"?`<div class="readout">
+        <div class="stat"><div class="k">Flow</div><div class="v">${(e.st.flow||0).toFixed(2)} <span style="color:var(--dim);font-size:10px">m³/s</span></div></div>
+        <div class="stat"><div class="k">Turbidity</div><div class="v">${(e.st.turb||0).toFixed(1)} <span style="color:var(--dim);font-size:10px">NTU</span></div></div>
+        <div class="stat"><div class="k">Potable</div><div class="v" style="color:${e.st.potable?'var(--good)':'var(--dim)'}">${e.st.potable?'yes':'no'}</div></div></div>`:''}
+      <div class="delbar"><button class="btn danger" onclick="delEdge('${e.id}')">Delete connection</button></div></div>`;
+    return;
+  }
+  const n=S.selNode?S.nodes[S.selNode]:null;
+  if(!n){ box.innerHTML=`<div class="empty">Select a node to inspect and tune it, or drop a new unit from the left. Water quality, power, and alarms all update live.</div>`; return; }
+  const T=TYPES[n.type];
+  let fields="";
+  const slider=(key,label,min,max,step,unit="")=>`<div class="field"><label>${label}<b>${n.p[key]}${unit}</b></label>
+     <input type="range" min="${min}" max="${max}" step="${step}" value="${n.p[key]}" oninput="setParam('${n.id}','${key}',this.value)"></div>`;
+  if(n.type==="source"){ fields=slider("flow","Output flow",0,20,0.5," m³/s")+slider("turb","Raw turbidity",0,60,1," NTU"); }
+  if(n.type==="remote"){ fields=slider("level","Reservoir level",0,100,1,"%")+slider("bloom","Algal bloom index",0,100,1,""); }
+  if(n.type==="asms"){ fields=slider("removal","Sediment removal",0,95,5,"%"); }
+  if(n.type==="pump"){ fields=slider("cap","Pump capacity",0,20,0.5," m³/s"); }
+  if(n.type==="solar"){ fields=slider("gen","Generation",1,16,1," kW")+slider("soc","Battery charge",0,100,1,"%"); }
+  if(n.type==="wwt"){ fields=slider("cap","Treatment capacity",0,20,0.5," m³/s"); }
+  if(n.type==="sensor"){ fields=slider("thr","Alarm threshold",0.5,30,0.5," NTU"); }
+  if(n.type==="leak"){ fields=slider("rate","Leak rate",0,40,1,"%")+slider("thr","Alarm threshold",0,40,1,"%"); }
+  if(n.type==="demand"){ fields=slider("need","Water demand",0,20,0.5," m³/s"); }
+  let ro="";
+  const stat=(k,v,c="")=>`<div class="stat"><div class="k">${k}</div><div class="v" style="${c}">${v}</div></div>`;
+  if(n.st.inFlow!=null) ro+=stat("In flow",(n.st.inFlow||0).toFixed(2));
+  if(["pump","asms","dwt","wwt","leak","source"].includes(n.type)) ro+=stat("Out flow",(n.st.outFlow||0).toFixed(2));
+  if(["asms","dwt","sensor","source","remote"].includes(n.type)) ro+=stat("Turbidity",(n.st.outTurb??n.st.read??0).toFixed(1)+" N");
+  if(TYPES[n.type].power) ro+=stat("Power", isPowered(n)?"on":"off", isPowered(n)?"color:var(--power)":"color:var(--dim)");
+  if(n.type==="solar") ro+=stat("Charge",Math.round(n.st.soc??n.p.soc)+"%");
+  if(n.type==="demand") ro+=stat("Coverage",Math.round((n.st.cover||0)*100)+"%", (n.st.cover||0)<.95?"color:var(--warn)":"color:var(--good)");
+  if(n.type==="scada"){ ro+=stat("Critical",(n.st.crit||0),"color:var(--alarm)"); ro+=stat("Warnings",(n.st.warn||0),"color:var(--warn)"); }
+  const coord = `${n.lat.toFixed(3)}°N, ${n.lon.toFixed(3)}°E`;
+  box.innerHTML=`<div class="insp">
+     <h3 style="color:${T.c}">${T.label}</h3><div class="sub">${T.sub} · ${n.id.replace("n","#")} · ${coord}</div>
+     <div class="field" style="margin-top:2px"><label>Provenance<b style="color:${n.real===false?'var(--warn)':'var(--good)'}">${n.real===false?'proposed':'existing'}</b></label>
+       <div class="seg" style="width:100%">
+         <button style="flex:1" class="${n.real!==false?'on':''}" onclick="setReal('${n.id}',true)">Existing</button>
+         <button style="flex:1" class="${n.real===false?'on':''}" onclick="setReal('${n.id}',false)">Proposed</button>
+       </div></div>
+     <div class="field"><label>Condition<b style="color:${n.status==='destroyed'?'var(--alarm)':'var(--good)'}">${n.status==='destroyed'?'destroyed':'operational'}</b></label>
+       <div class="seg" style="width:100%">
+         <button style="flex:1" class="${n.status!=='destroyed'?'on':''}" onclick="setStatus('${n.id}','ok')">Operational</button>
+         <button style="flex:1" class="${n.status==='destroyed'?'on':''}" onclick="setStatus('${n.id}','destroyed')">Destroyed</button>
+       </div></div>
+     ${fields}
+     <div class="readout">${ro}</div>
+     ${n.type==="sensor"?`<svg class="spark" id="spark" viewBox="0 0 240 40" preserveAspectRatio="none"></svg>`:''}
+     <div class="delbar"><button class="btn danger" onclick="delNode('${n.id}')">Delete unit</button></div>
+   </div>`;
+  if(n.type==="sensor") drawSpark(n);
+}
+function drawSpark(n){
+  const buf=SPARK[n.id]||[]; const el=$("#spark"); if(!el) return;
+  const max=Math.max(n.p.thr*2, ...buf, 4);
+  const pts=buf.map((v,i)=>`${(i/(Math.max(buf.length-1,1)))*240},${40-clamp(v/max,0,1)*38}`).join(" ");
+  const thrY=40-clamp(n.p.thr/max,0,1)*38;
+  el.innerHTML=`<line x1="0" y1="${thrY}" x2="240" y2="${thrY}" stroke="#5b4a23" stroke-dasharray="3 3" stroke-width="1"/>
+    <polyline points="${pts}" fill="none" stroke="${n.st.read>n.p.thr?'var(--alarm)':'var(--good)'}" stroke-width="1.6"/>`;
+}
+function renderAlarms(){
+  const list=$("#alarmList"), c=$("#alarmCount");
+  c.textContent = ALARMS.length?`· ${ALARMS.length}`:"";
+  if(!ALARMS.length){ list.innerHTML=`<div class="nominal">◉ All systems nominal</div>`; return; }
+  const order={crit:0,warn:1};
+  list.innerHTML=ALARMS.sort((a,b)=>order[a.sev]-order[b.sev]).map(a=>
+    `<div class="arow ${a.sev}" onclick="selectNode('${a.id}')" style="cursor:pointer">
+       <span class="pill"></span><div class="msg">${a.msg}<span class="who">${a.who}</span></div></div>`).join("");
+}
+
+/* ---- mutations (exposed) -------------------------------------------------- */
+window.setParam=(id,k,v)=>{ S.nodes[id].p[k]=parseFloat(v); render(); };
+window.delNode=(id)=>{ delete S.nodes[id]; Object.values(S.edges).forEach(e=>{if(e.from===id||e.to===id)delete S.edges[e.id];}); S.selNode=null; render(); };
+window.delEdge=(id)=>{ delete S.edges[id]; S.selEdge=null; render(); };
+window.selectNode=(id)=>{ S.selNode=id; S.selEdge=null; render(); };
+window.setReal=(id,v)=>{ S.nodes[id].real=v; render(); };
+window.setStatus=(id,v)=>{ S.nodes[id].status=v; render(); };
+
+function makeNode(type, coords){
+  const id="n"+(uid++);
+  let {x,y,lat,lon}=coords;
+  if(x==null||y==null){ const s=geoToSchematic(lat,lon); x=s.x; y=s.y; }
+  if(lat==null||lon==null){ const g=schematicToGeo(x,y); lat=g.lat; lon=g.lon; }
+  S.nodes[id]={id,type,x,y,lat,lon,real:false,p:{...TYPES[type].defaults},st:{}};
+  return id;
+}
+
+/* ---- palette + mode plumbing ---------------------------------------------- */
+function buildPalette(){
+  const p=$("#palette");
+  p.innerHTML=Object.entries(TYPES).map(([k,t])=>`
+    <div class="pchip" data-t="${k}">
+      <div class="g" style="color:${t.c};border:1px solid ${t.c}55;background:${t.c}14">${t.g}</div>
+      <div class="nm">${t.label}<small>${t.sub}</small></div>
+    </div>`).join("");
+  p.querySelectorAll(".pchip").forEach(el=>el.onclick=()=>{
+    placeType = placeType===el.dataset.t ? null : el.dataset.t;
+    connectMode=null; connectFrom=null; refreshModes();
+  });
+}
+function refreshModes(){
+  document.querySelectorAll(".pchip").forEach(el=>el.classList.toggle("armed",el.dataset.t===placeType));
+  $("#connFlow").classList.toggle("on",connectMode==="pipe");
+  $("#connPower").classList.toggle("on",connectMode==="power");
+  $("#hint").textContent = placeType? `Click ${S.mode==="geo"?"the map":"the canvas"} to drop: ${TYPES[placeType].label}` :
+     connectMode? `Connect mode (${connectMode==="power"?"power":"pipe"}): click source node, then target` :
+     S.mode==="geo" ? "Geographic view — Dnipro–Kryvyi Rih corridor (approx. coordinates). Pan/zoom freely." :
+     "Live scenario running — try “Grid strike”, then watch the pump and town";
+}
+function setViewBox(){
+  if(S.mode==="geo"){ svg.setAttribute("viewBox",`0 0 ${svg.clientWidth} ${svg.clientHeight}`); svg.setAttribute("preserveAspectRatio","none"); }
+  else { svg.setAttribute("viewBox","0 0 1000 680"); svg.setAttribute("preserveAspectRatio","xMidYMid meet"); }
+}
+function ensureMap(){
+  if(mapObj) return true;
+  if(typeof L==="undefined"){ return false; }
+  mapObj=L.map("map",{zoomControl:true,attributionControl:true,minZoom:6,maxZoom:14}).setView([47.72,33.55],9);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{
+    attribution:'© OpenStreetMap, © CARTO', subdomains:"abcd"
+  }).addTo(mapObj);
+  CANAL_ROUTE.forEach(seg=>{
+    L.polyline(seg,{color:"#9a7b4f",weight:2.5,opacity:.9,dashArray:"7 6",lineCap:"round"})
+     .addTo(mapObj).bindTooltip("Dnipro-Kryvyi Rih canal - historic, dry since June 2023",{sticky:true});
+  });
+  MAIN_ROUTE.forEach(seg=>{
+    L.polyline(seg,{color:"#38bdf8",weight:7,opacity:.16,lineCap:"round"}).addTo(mapObj);          // soft glow under route
+    L.polyline(seg,{color:"#38bdf8",weight:2.5,opacity:.7,lineCap:"round"}).addTo(mapObj)
+     .bindTooltip("Inhulets–Pivdenne trunk main — INDICATIVE (anchored to real pump stations; alignment not surveyed)",{sticky:true});
+  });
+  mapObj.on("move zoom moveend zoomend viewreset",()=>{ if(S.mode==="geo") render(); });
+  mapObj.on("click",mapClick);
+  return true;
+}
+function fitToNodes(){
+  if(!mapObj) return;
+  // Landing view = the ACTIVE water-connectivity area: nodes on pipe edges that carry flow,
+  // plus live sources and anything wired to them by power links. This excludes the dry-canal
+  // branch (zero flow) so the map opens on the working system, not the whole region.
+  const ids=new Set();
+  for(const e of Object.values(S.edges)){
+    if(e.kind==="pipe" && (e.st.flow||0)>0.01){ ids.add(e.from); ids.add(e.to); }
+  }
+  for(const n of Object.values(S.nodes)){ if(n.type==="source" && n.p.flow>0) ids.add(n.id); }
+  for(const e of Object.values(S.edges)){
+    if(e.kind==="power"){ if(ids.has(e.from)) ids.add(e.to); if(ids.has(e.to)) ids.add(e.from); }
+  }
+  let pts=[...ids].map(id=>S.nodes[id]).filter(Boolean).map(n=>[n.lat,n.lon]);
+  if(pts.length<2) pts=Object.values(S.nodes).map(n=>[n.lat,n.lon]); // fallback: everything
+  mapObj.fitBounds(pts,{padding:[60,60]});
+}
+function setMode(m){
+  if(m==="geo"){
+    if(!ensureMap()){ alert("Geographic mode needs an internet connection to load map tiles. Staying in schematic view."); return; }
+  }
+  S.mode=m;
+  document.body.classList.toggle("geo",m==="geo");
+  $("#modeSeg").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.m===m));
+  if(m==="geo"){ setTimeout(()=>{ mapObj.invalidateSize(); setViewBox(); fitToNodes(); render(); },60); }
+  else { setViewBox(); render(); }
+  refreshModes();
+}
+$("#modeSeg").onclick=e=>{ const m=e.target.dataset.m; if(m && m!==S.mode) setMode(m); };
+
+/* ---- interaction ---------------------------------------------------------- */
+function mapClick(e){            // geo-mode clicks on empty map
+  if(placeType){
+    const id=makeNode(placeType,{lat:e.latlng.lat,lon:e.latlng.lng});
+    placeType=null; S.selNode=id; refreshModes(); render(); return;
+  }
+  S.selNode=null; S.selEdge=null; render();
+}
+svg.addEventListener("pointerdown",e=>{
+  const ng=e.target.closest(".node");
+  if(placeType && S.mode!=="geo"){ const{x,y}=toSvg(e); const id=makeNode(placeType,{x,y}); placeType=null; S.selNode=id; refreshModes(); render(); return; }
+  if(ng){
+    const id=ng.dataset.id;
+    if(connectMode){
+      if(!connectFrom){ connectFrom=id; render(); }
+      else if(connectFrom!==id){ const eid="e"+(uid++); S.edges[eid]={id:eid,from:connectFrom,to:id,kind:connectMode,st:{}}; connectFrom=null; connectMode=null; refreshModes(); render(); }
+      return;
+    }
+    S.selNode=id; S.selEdge=null; dragging=id; render(); return;
+  }
+  const lg=e.target.closest("line");
+  if(lg && !connectMode){ S.selEdge=lg.dataset.id; S.selNode=null; render(); return; }
+  if(S.mode!=="geo"){ S.selNode=null; S.selEdge=null; render(); }
+});
+window.addEventListener("pointermove",e=>{
+  if(!dragging) return;
+  const n=S.nodes[dragging]; if(!n) return;
+  if(S.mode==="geo" && mapObj){
+    const r=mapObj.getContainer().getBoundingClientRect();
+    const ll=mapObj.containerPointToLatLng(L.point(e.clientX-r.left, e.clientY-r.top));
+    n.lat=ll.lat; n.lon=ll.lng; const s=geoToSchematic(n.lat,n.lon); n.x=s.x; n.y=s.y;
+  } else {
+    const {x,y}=toSvg(e); n.x=clamp(x,30,970); n.y=clamp(y,30,650); const g=schematicToGeo(n.x,n.y); n.lat=g.lat; n.lon=g.lon;
+  }
+  render();
+});
+window.addEventListener("pointerup",()=>{dragging=null;});
+window.addEventListener("keydown",e=>{ if(e.key==="Escape"){placeType=null;connectMode=null;connectFrom=null;S.selNode=null;S.selEdge=null;refreshModes();render();}
+  if((e.key==="Delete"||e.key==="Backspace")&&S.selNode){delNode(S.selNode);} });
+window.addEventListener("resize",()=>{ if(S.mode==="geo"&&mapObj){ mapObj.invalidateSize(); setViewBox(); render(); } });
+
+$("#connFlow").onclick=()=>{ connectMode=connectMode==="pipe"?null:"pipe"; connectFrom=null; placeType=null; refreshModes(); };
+$("#connPower").onclick=()=>{ connectMode=connectMode==="power"?null:"power"; connectFrom=null; placeType=null; refreshModes(); };
+
+/* ---- top controls --------------------------------------------------------- */
+$("#playBtn").onclick=function(){ paused=!paused; this.classList.toggle("on",!paused); this.textContent=paused?"▶ Run":"⏸ Pause"; };
+$("#speedBtn").onclick=function(){ speed = speed===1?2:speed===2?4:1; this.textContent=speed+"×"; };
+$("#gridBtn").onclick=function(){ S.grid=!S.grid; this.classList.toggle("on",S.grid); };
+$("#autoBtn").onclick=function(){ S.autoTod=!S.autoTod; this.classList.toggle("on",S.autoTod); };
+$("#resetBtn").onclick=()=>{ const m=S.mode; seed(); step(); SPARK={}; if(m==="geo"&&mapObj){S.mode="geo";setTimeout(()=>{fitToNodes();render();},30);} render(); };
+$("#injects").onclick=e=>{
+  const ev=e.target.dataset.ev; if(!ev) return;
+  if(ev==="strike"){ S.grid=false; $("#gridBtn").classList.remove("on"); }
+  if(ev==="bloom"){ const r=Object.values(S.nodes).find(n=>n.type==="remote"); if(r){r.st.fx=80;} }
+  if(ev==="turb"){ const s=Object.values(S.nodes).find(n=>n.type==="source"); if(s){s.st.fx=50;} }
+  if(ev==="burst"){ const l=Object.values(S.nodes).find(n=>n.type==="leak"); if(l){l.p.rate=22;} }
+  render();
+};
+$("#exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="water-twin-network.json"; a.click();
+};
+$("#importBtn").onclick=()=>$("#fileIn").click();
+$("#fileIn").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ S=JSON.parse(r.result); S.mode=S.mode||"schematic"; uid=Object.keys(S.nodes).length+Object.keys(S.edges).length+50; setMode(S.mode); render(); }catch(err){ alert("Could not read that file."); } }; r.readAsText(f); };
+
+/* ---- main loop ------------------------------------------------------------ */
+function dismissIntro(){ const el=$("#intro"); if(el) el.classList.add("hidden"); if(S&&S.mode==="geo"&&mapObj){ mapObj.invalidateSize(); fitToNodes(); render(); } }
+window.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const el=$("#intro"); if(el&&!el.classList.contains("hidden")) dismissIntro(); } });
+document.getElementById("introStart").onclick=dismissIntro;
+buildPalette(); seed(); step();
+setInterval(()=>{
+  if(paused) return;
+  step();
+  for(const n of Object.values(S.nodes)){ if(n.type==="sensor"){ (SPARK[n.id]=SPARK[n.id]||[]).push(n.st.read||0); if(SPARK[n.id].length>60)SPARK[n.id].shift(); } }
+  render();
+}, 600);
+render();
+if(typeof L!=="undefined") setMode("geo");  // boot into geographic view (stays schematic if offline)
+</script>
+</body>
+</html>
