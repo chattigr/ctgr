@@ -3,7 +3,7 @@
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://ctgr.dev/</loc>
-    <lastmod>2026-07-09</lastmod>
+    <lastmod>2026-07-24</lastmod>
     <video:video>
       <video:player_loc allow_embed="yes">https://player.vimeo.com/video/1144256132</video:player_loc>
       <video:title>Reservoir sediment prevention and removal using CHATTIGR's technology</video:title>
